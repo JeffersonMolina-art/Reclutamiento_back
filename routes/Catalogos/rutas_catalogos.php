@@ -8,7 +8,8 @@ use App\Http\Controllers\Api\Catalogos\GerenciaApiController;
     use App\Http\Controllers\Api\PermisoApiController;
 use App\Http\Controllers\Api\Catalogos\PuestoApiController;
 use App\Http\Controllers\Api\Catalogos\RegionApiController;
-use App\Http\Controllers\Api\RoleApiController;
+    use App\Http\Controllers\Api\PostulacionEstadoApiController;
+    use App\Http\Controllers\Api\RoleApiController;
 use App\Http\Controllers\Api\Catalogos\UnidadApiController;
 
 use Illuminate\Support\Facades\Route;
@@ -29,4 +30,6 @@ Route::prefix('catalogo')->name('catalogo.')->group(function () {
     Route::apiResource('gerencias', GerenciaApiController::class)->parameters(['gerencias' => 'gerencia']);
     Route::apiResource('municipios', MunicipioApiController::class)->parameters(['municipios' => 'municipio']);
     Route::apiResource('pais', PaisApiController::class)->parameters(['pais' => 'pais']);
+    Route::apiResource('postulacion_estado', PostulacionEstadoApiController::class)->parameters(['postulacion_estado' => 'postulacionestado']);
+
 });
