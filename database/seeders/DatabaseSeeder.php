@@ -10,6 +10,7 @@ use Database\Seeders\Configuraciones\OpcionesBasicasTableSeeder;
 use Database\Seeders\Configuraciones\RolesPermisosBasicos;
 use Database\Seeders\Configuraciones\UsuarisistemaSeeder;
 use Database\Seeders\Reclutamiento\GerenciasSeeder;
+use Database\Seeders\Reclutamiento\PostulacionEstadosSeeder;
 use Database\Seeders\Reclutamiento\PuestosSeeder;
 use Database\Seeders\Reclutamiento\SedesSeeder;
 use Database\Seeders\Reclutamiento\UnidadesSeeder;
@@ -34,6 +35,7 @@ class DatabaseSeeder extends Seeder
             UnidadesSeeder::class,
             PuestosSeeder::class,
             VacantesEstadosSeeder::class,
+            PostulacionEstadosSeeder::class,
             SedesSeeder::class,
             VacantesSeeder::class,
         ]);
