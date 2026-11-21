@@ -31,24 +31,23 @@ class UnidadApiController extends AppbaseController
 
             $unidads = QueryBuilder::for(Unidad::class)
                 ->allowedFilters(
+                    AllowedFilter::exact('id'),
                     'codigo',
                     'nombre',
                     'emails',
                     'estado',
-                    'regiones_id',
-                    'gerencia_id',
-                    'jefe_id',
-                    'auxiliar_id',
-                    'auxiliar2_id',
+                    AllowedFilter::exact('regiones_id'),
+                    AllowedFilter::exact('gerencia_id'),
+                    AllowedFilter::exact('jefe_id'),
+                    AllowedFilter::exact('auxiliar_id'),
                     'email',
-                    'municipio_id',
-                    'departamento_id',
+                    AllowedFilter::exact('municipio_id'),
+                    AllowedFilter::exact('departamento_id'),
                     'latitud',
                     'longitud',
                     'id_place_google',
                     'codigo_aprobador',
                     'grupo_aprobador',
-                    'codigo_area_t24',
                 )
                 ->allowedIncludes()
                 ->allowedSorts(

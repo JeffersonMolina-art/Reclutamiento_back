@@ -10,6 +10,7 @@ use App\Http\Requests\Api\UpdateMunicipioApiRequest;
 use App\Models\Municipio;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 /**
@@ -39,12 +40,16 @@ class MunicipioApiController extends AppBaseController implements HasMiddleware
     {
         return $this->executeOperation(function () {
             $municipios = QueryBuilder::for(Municipio::class)
-                ->allowedFilters('codigo',
+                ->allowedFilters(
+                    AllowedFilter::exact('id'),
+                    'codigo',
                     'nombre',
                     'estado',
                     'departamento_id',
                     'existe_agencia')
-                ->allowedSorts('codigo',
+                ->allowedSorts(
+                    'id',
+                    'codigo',
                     'nombre',
                     'estado',
                     'departamento_id',

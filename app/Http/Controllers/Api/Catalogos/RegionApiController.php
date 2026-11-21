@@ -8,6 +8,7 @@ use App\Http\Requests\Api\UpdateRegionApiRequest;
 use App\Models\Region;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 
@@ -29,12 +30,14 @@ class RegionApiController extends AppbaseController
 
             $regiones = QueryBuilder::for(Region::class)
                 ->allowedFilters(
+                    AllowedFilter::exact('id'),
                     'codigo',
                     'nombre',
                     'estado',
                     'jefe_id',
                 )
                 ->allowedFields(
+                    'id',
                     'codigo',
                     'nombre',
                     'estado',

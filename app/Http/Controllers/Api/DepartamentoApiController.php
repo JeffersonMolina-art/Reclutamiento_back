@@ -10,6 +10,7 @@ use App\Http\Requests\Api\UpdateDepartamentoApiRequest;
 use App\Models\Departamento;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 /**
@@ -39,11 +40,15 @@ class DepartamentoApiController extends AppBaseController implements HasMiddlewa
     {
         return $this->executeOperation(function () {
             $departamentos = QueryBuilder::for(Departamento::class)
-                ->allowedFilters('codigo',
+                ->allowedFilters(
+                    AllowedFilter::exact('id'),
+                    'codigo',
                     'nombre',
                     'estado',
                     'codigo_bankworks')
-                ->allowedSorts('codigo',
+                ->allowedSorts(
+                    'id',
+                    'codigo',
                     'nombre',
                     'estado',
                     'codigo_bankworks')

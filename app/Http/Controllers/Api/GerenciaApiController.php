@@ -10,6 +10,7 @@ use App\Http\Requests\Api\UpdateGerenciaApiRequest;
 use App\Models\Gerencia;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 /**
@@ -39,10 +40,14 @@ class GerenciaApiController extends AppBaseController implements HasMiddleware
     {
         return $this->executeOperation(function () {
             $gerencias = QueryBuilder::for(Gerencia::class)
-                ->allowedFilters('codigo',
+                ->allowedFilters(
+                    AllowedFilter::exact('id'),
+                    'codigo',
                     'nombre',
                     'estado')
-                ->allowedSorts('codigo',
+                ->allowedSorts(
+                    'id',
+                    'codigo',
                     'nombre',
                     'estado')
                 ->defaultSort('-id') // Ordenar por defecto por fecha descendente

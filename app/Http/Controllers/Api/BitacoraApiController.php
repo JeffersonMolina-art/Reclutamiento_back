@@ -10,6 +10,7 @@ use App\Http\Requests\Api\UpdateBitacoraApiRequest;
 use App\Models\Bitacora;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 /**
@@ -39,15 +40,19 @@ class BitacoraApiController extends AppBaseController implements HasMiddleware
     {
         return $this->executeOperation(function () {
             $bitacoras = QueryBuilder::for(Bitacora::class)
-                ->allowedFilters('model_type',
-                    'model_id',
+                ->allowedFilters(
+                    AllowedFilter::exact('id'),
+                    'model_type',
+                    AllowedFilter::exact('model_id'),
                     'seccion',
                     'titulo',
                     'comentario',
                     'icono',
                     'color',
                     'usuario_id')
-                ->allowedSorts('model_type',
+                ->allowedSorts(
+                    'id',
+                    'model_type',
                     'model_id',
                     'seccion',
                     'titulo',

@@ -10,6 +10,7 @@ use App\Http\Requests\Api\UpdateEntrevistaEstadoApiRequest;
 use App\Models\EntrevistaEstado;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 /**
@@ -39,9 +40,13 @@ class EntrevistaEstadoApiController extends AppBaseController implements HasMidd
     {
         return $this->executeOperation(function () {
             $entrevistas_estado = QueryBuilder::for(EntrevistaEstado::class)
-                ->allowedFilters('nombre',
+                ->allowedFilters(
+                    AllowedFilter::exact('id'),
+                    'nombre',
                     'codigo')
-                ->allowedSorts('nombre',
+                ->allowedSorts(
+                    'id',
+                    'nombre',
                     'codigo')
                 ->defaultSort('-id') // Ordenar por defecto por fecha descendente
                 ->jsonPaginate(request('page.size') ?? 10);

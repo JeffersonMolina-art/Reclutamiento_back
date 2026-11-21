@@ -10,6 +10,7 @@ use App\Http\Requests\Api\UpdatePaisApiRequest;
 use App\Models\Pais;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 /**
@@ -39,11 +40,15 @@ class PaisApiController extends AppBaseController implements HasMiddleware
     {
         return $this->executeOperation(function () {
             $pais = QueryBuilder::for(Pais::class)
-                ->allowedFilters('codigo',
+                ->allowedFilters(
+                    AllowedFilter::exact('id'),
+                    'codigo',
                     'nombre',
                     'nacionalidad',
                     'estado')
-                ->allowedSorts('codigo',
+                ->allowedSorts(
+                    'id',
+                    'codigo',
                     'nombre',
                     'nacionalidad',
                     'estado')

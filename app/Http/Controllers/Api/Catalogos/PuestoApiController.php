@@ -8,6 +8,7 @@ use App\Http\Requests\Api\UpdatePuestoApiRequest;
 use App\Models\Puesto;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 
@@ -27,7 +28,7 @@ class PuestoApiController extends AppbaseController
         return $this->executeOperation(function () {
             $puestos = QueryBuilder::for(Puesto::class)
                 ->allowedFilters(
-                    'id',
+                    AllowedFilter::exact('id'),
                     'nombre',
                     'gerencia_id',
                     'productividad',

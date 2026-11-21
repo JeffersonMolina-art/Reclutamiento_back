@@ -116,27 +116,6 @@ class RoleApiController extends AppBaseController
             ], 500);
         }
     }
-//    public function search(Request $request)
-//    {
-//        // Validar el parámetro de búsqueda
-//        $request->validate([
-//            'query' => 'nullable|string|max:255',
-//        ]);
-//
-//        // Filtrar roles según el término de búsqueda
-//        $roles = Role::query()
-//            ->when($request->query('query'), function ($query, $search) {
-//                return $query->where('name', 'like', '%' . $search . '%');
-//            })
-//            ->paginate(10); // Paginación para resultados manejables
-//
-//        return response()->json([
-//            'success' => true,
-//            'data' => $roles,
-//            'message' => 'Resultados de búsqueda obtenidos correctamente'
-//        ]);
-//    }
-
     private function createAuditPermisos($role, $permisos)
     {
         if ($permisos) {
