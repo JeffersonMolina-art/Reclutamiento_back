@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\AppBaseController;
-use App\Http\Requests\Api\CreateVacanteApiRequest;
-use App\Http\Requests\Api\UpdateVacanteApiRequest;
 use App\Models\Vacante;
 use App\Models\VacanteEstado;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Arr;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -60,30 +63,57 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
         });
     }
 
-    /**
-     * Store a newly created Vacante in storage.
-     * POST /vacantes
-     */
-    public function store(CreateVacanteApiRequest $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
-        return $this->executeTransaction(function () use ($request) {
-            $datos = $request->safe()->except(['requisitos', 'caracteristicas']);
-            $datos['user_id'] = $request->user()->id;
-            $datos = $this->completarFechaPublicacion($datos);
+        $validados = $request->validate([
+            'puesto_id' => ['required', 'integer'],
+            'sede_id' => ['required', 'integer'],
+            'user_encargado' => ['nullable', 'integer'],
+            'nombre' => ['required', 'string', 'max:45'],
+            'descripcion' => ['required', 'string', 'max:255'],
+            'cantidad_plazas' => ['required', 'integer', 'min:1'],
+            'modalidad_trabajo' => ['required', Rule::in(['presencial', 'remoto', 'hibrido'])],
+            'salario_minimo' => ['required', 'numeric', 'min:0', 'decimal:0,2'],
+            'salario_maximo' => ['required', 'numeric', 'gte:salario_minimo', 'decimal:0,2'],
+            'requisitos' => ['sometimes', 'array'],
+            'requisitos.*' => ['array:nombre,es_obligatorio'],
+            'requisitos.*.nombre' => ['required', 'string', 'max:255'],
+            'requisitos.*.es_obligatorio' => ['required', 'boolean'],
+            'caracteristicas' => ['sometimes', 'array'],
+            'caracteristicas.*' => ['array:nombre,valor'],
+            'caracteristicas.*.nombre' => ['required', 'string', 'max:255'],
+            'caracteristicas.*.valor' => ['required', 'string', 'max:45'],
+        ]);
 
-            $vacante = Vacante::create($datos);
+        return $this->executeTransaction(function () use ($request, $validados) {
+            $validados['user_id'] = $request->user()->id;
+            $validados['estado_id'] = VacanteEstado::BORRADOR;
 
-            $this->sincronizarHijos($vacante, $request->validated());
+            $vacante = Vacante::create($validados);
+
+            $this->sincronizarHijos($vacante, $validados);
+
+            $comentario = implode("\n", [
+                "Se creó la vacante «{$vacante->nombre}».",
+                "Puesto: {$vacante->puesto?->nombre} · Sede: {$vacante->sede?->nombre}",
+                "Modalidad: {$vacante->modalidad_trabajo} · Plazas: {$vacante->cantidad_plazas}",
+                'Estado inicial: ' . ($vacante->estado?->nombre ?? 'Sin definir'),
+                'Encargado: ' . ($vacante->encargado?->nombre_completo ?? 'Sin asignar'),
+                'Rango salarial: ' . ($vacante->rango_salarial ?? 'Sin definir'),
+            ]);
 
             $vacante->addBitacora(
                 'Vacante',
                 'Vacante creada',
-                $vacante->generarComentarioCreacion(),
-                'tabler-plus',
+                $comentario,
+                'tabler-file-plus',
                 'success'
             );
 
-            return $this->sendResponse($vacante->load('estado', 'puesto', 'sede', 'requisitos', 'caracteristicas')->toArray(), 'Vacante creada con éxito.');
+            return $this->sendResponse(
+                $vacante->load('estado', 'puesto', 'sede', 'requisitos', 'caracteristicas')->toArray(),
+                'Vacante creada con éxito.'
+            );
         });
     }
 
@@ -104,26 +134,72 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
      * Update the specified Vacante in storage.
      * PUT/PATCH /vacantes/{id}
      */
-    public function update(UpdateVacanteApiRequest $request, $id): JsonResponse
+    public function update(Request $request, Vacante $vacante): JsonResponse
     {
-        return $this->executeTransaction(function () use ($request, $id) {
-            $vacante = Vacante::findOrFail($id);
+        $validados = $request->validate([
+            'estado_id' => ['required', 'integer'],
+            'puesto_id' => ['required', 'integer'],
+            'sede_id' => ['required', 'integer'],
+            'user_encargado' => ['nullable', 'integer'],
+            'nombre' => ['required', 'string', 'max:45'],
+            'descripcion' => ['required', 'string', 'max:255'],
+            'cantidad_plazas' => ['required', 'integer', 'min:1'],
+            'fecha_publicacion' => ['nullable', 'date'],
+            'modalidad_trabajo' => ['required', Rule::in(['presencial', 'remoto', 'hibrido'])],
+            'salario_minimo' => ['required', 'numeric', 'min:0', 'decimal:0,2'],
+            'salario_maximo' => ['required', 'numeric', 'gte:salario_minimo', 'decimal:0,2'],
+            'requisitos' => ['sometimes', 'array'],
+            'requisitos.*' => ['array'],
+            'requisitos.*.id' => ['nullable', 'integer', 'min:1', 'distinct'],
+            'requisitos.*.nombre' => ['required', 'string', 'max:255'],
+            'requisitos.*.es_obligatorio' => ['required', 'boolean'],
+            'caracteristicas' => ['sometimes', 'array'],
+            'caracteristicas.*' => ['array'],
+            'caracteristicas.*.id' => ['nullable', 'integer', 'min:1', 'distinct'],
+            'caracteristicas.*.nombre' => ['required', 'string', 'max:255'],
+            'caracteristicas.*.valor' => ['required', 'string', 'max:45'],
+        ]);
 
-            $datos = $this->completarFechaPublicacion(
-                $request->safe()->except(['requisitos', 'caracteristicas']),
-                $vacante
+        if (array_key_exists('requisitos', $validados)) {
+            $validados['requisitos'] = array_map(
+                fn (array $fila) => [
+                    'id' => $fila['id'] ?? null,
+                    'nombre' => $fila['nombre'],
+                    'es_obligatorio' => $fila['es_obligatorio'],
+                ],
+                $validados['requisitos']
             );
+        }
 
-            $vacante->fill($datos);
+        if (array_key_exists('caracteristicas', $validados)) {
+            $validados['caracteristicas'] = array_map(
+                fn (array $fila) => [
+                    'id' => $fila['id'] ?? null,
+                    'nombre' => $fila['nombre'],
+                    'valor' => $fila['valor'],
+                ],
+                $validados['caracteristicas']
+            );
+        }
+
+        return $this->executeTransaction(function () use ($vacante, $validados) {
+            $validados = $this->completarFechaPublicacion($validados, $vacante);
+
+            $vacante->fill(array_intersect_key(
+                $validados,
+                array_flip($vacante->getFillable())
+            ));
+
             $comentario = $vacante->generarComentarioActualizacion();
+            $vacante->estado_id = VacanteEstado::PUBLICADA;
             $vacante->save();
 
-            $validados = $request->validated();
             $this->sincronizarHijos($vacante, $validados);
 
             if (array_key_exists('requisitos', $validados)) {
                 $comentario .= ' | Se actualizaron los requisitos';
             }
+
             if (array_key_exists('caracteristicas', $validados)) {
                 $comentario .= ' | Se actualizaron las características';
             }
@@ -136,7 +212,10 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
                 'primary'
             );
 
-            return $this->sendResponse($vacante->load('estado', 'puesto', 'sede', 'requisitos', 'caracteristicas'), 'Vacante actualizada con éxito.');
+            return $this->sendResponse(
+                $vacante->load('estado', 'puesto', 'sede', 'requisitos', 'caracteristicas')->toArray(),
+                'Vacante actualizada con éxito.'
+            );
         });
     }
 
@@ -163,19 +242,55 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
     private function sincronizarHijos(Vacante $vacante, array $validados): void
     {
         if (array_key_exists('requisitos', $validados)) {
-            $vacante->requisitos()->delete();
-            $vacante->requisitos()->createMany($validados['requisitos'] ?? []);
+            $this->sincronizarFilas(
+                $vacante->requisitos(),
+                $validados['requisitos'],
+                'requisitos'
+            );
         }
 
         if (array_key_exists('caracteristicas', $validados)) {
-            $vacante->caracteristicas()->delete();
-            $vacante->caracteristicas()->createMany($validados['caracteristicas'] ?? []);
+            $this->sincronizarFilas(
+                $vacante->caracteristicas(),
+                $validados['caracteristicas'],
+                'caracteristicas'
+            );
+        }
+    }
+
+    private function sincronizarFilas(HasMany $relacion, array $filas, string $campo): void
+    {
+        $existentes = $relacion->get()->keyBy('id');
+        $idsConservados = [];
+
+        foreach ($filas as $indice => $fila) {
+            $id = $fila['id'] ?? null;
+            unset($fila['id']);
+
+            if ($id === null) {
+                $relacion->create($fila);
+                continue;
+            }
+
+            $registro = $existentes->get($id);
+
+            if ($registro === null) {
+                throw ValidationException::withMessages(["{$campo}.{$indice}.id" => 'Este registro no pertenece a la vacante.',]);
+            }
+
+            $registro->update($fila);
+            $idsConservados[] = $registro->getKey();
+        }
+
+        foreach ($existentes->except($idsConservados) as $registro) {
+            $registro->delete();
         }
     }
 
     private function completarFechaPublicacion(array $datos, ?Vacante $vacante = null): array
     {
-        $codigo = VacanteEstado::whereKey($datos['estado_id'])->value('codigo');
+        $estadoId = $datos['estado_id'] ?? $vacante?->estado_id;
+        $codigo = VacanteEstado::whereKey($estadoId)->value('codigo');
         $fechaActual = $datos['fecha_publicacion'] ?? $vacante?->fecha_publicacion;
 
         if ($codigo === Vacante::ESTADO_PUBLICADA && empty($fechaActual)) {
