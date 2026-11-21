@@ -15,6 +15,7 @@ class IndexTableSeeder extends Seeder
             UsuarisistemaSeeder::class,
             OpcionesBasicasTableSeeder::class,
             OpcionesCatalogosTableSeeder::class,
+            OpcionesFlujosTableSeeder::class,
             MigrarUsuariosSiguaTableSeeders::class,
             RolesPermisosBasicos::class,
         ]);
