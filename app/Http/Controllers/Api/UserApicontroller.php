@@ -50,6 +50,7 @@ class UserApicontroller extends AppBaseController implements HasMiddleware
                 ->allowedFilters(
                     AllowedFilter::exact('id'),
                     AllowedFilter::scope('buscarPorNombre', 'buscarPorNombre'),
+                    AllowedFilter::scope('reclutadores'),
                     'usuario_dominio',
                     'email',
                     'nombre',
