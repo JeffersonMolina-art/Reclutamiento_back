@@ -11,6 +11,7 @@ Route::middleware(['auth:sanctum', 'interno'])->name('api.')->group(function () 
     require __DIR__ . '/Users/rutas_users.php';
     require __DIR__ . '/Configuraciones/MenuOpcion/api.php';
     require __DIR__ . '/Catalogos/rutas_catalogos.php';
+    require __DIR__ . '/Reclutamiento/api.php';
     require __DIR__ . '/Configuraciones/api.php';
     require __DIR__ . '/Desarrollo/rutas_desarrollo.php';
     require __DIR__ . '/Exportar/Api.php';
