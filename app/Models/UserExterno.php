@@ -3,10 +3,11 @@
     namespace App\Models;
 
 
-    use Illuminate\Database\Eloquent\Model;
     use Illuminate\Database\Eloquent\Relations\HasOne;
     use Illuminate\Database\Eloquent\SoftDeletes;
     use Illuminate\Database\Eloquent\Factories\HasFactory;
+    use Illuminate\Foundation\Auth\User as Authenticatable;
+    use Laravel\Sanctum\HasApiTokens;
 
     /**
      * @property int $id
@@ -38,11 +39,11 @@
      * @method static \Illuminate\Database\Eloquent\Builder<static>|UserExterno withoutTrashed()
      * @mixin \Eloquent
      */
-    class UserExterno extends Model
+    class UserExterno extends Authenticatable
     {
 
         use SoftDeletes;
-        use HasFactory;
+        use HasApiTokens;
 
         protected $table = 'reclutamiento.user_externos';
         public const ESTADO_ACTIVO = 1;
@@ -76,7 +77,7 @@
                 'updated_at' => 'datetime',
                 'deleted_at' => 'datetime',
             ];
-
+        protected $hidden = ['password'];
 
         /**
          * Validation rules
