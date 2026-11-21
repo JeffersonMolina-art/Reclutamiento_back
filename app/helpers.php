@@ -3,7 +3,6 @@
 use App\Extenciones\MontoALetras;
 use App\Extenciones\NumeroALetras;
 use App\Models\Configuracion;
-use App\Models\SIGUA\Media;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Carbon;
@@ -23,15 +22,6 @@ function parseStrLike($string = null): string|null
 function usuarioAutenticado(): User|Authenticatable|null
 {
     return auth()->user() ?? auth('api')->user();
-}
-
-function base64toFile($base64,$fileName): string
-{
-    $file = base64_decode($base64);
-
-    Storage::disk('local_temp')->put($fileName, $file);
-
-    return storage_path('app/temp/'.$fileName);
 }
 
 function getLogo($conversion = 'webp'): string
