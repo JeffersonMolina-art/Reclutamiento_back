@@ -1,0 +1,276 @@
+<?php
+
+
+namespace App\Traits;
+
+
+use App\Models\Bitacora;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Spatie\Permission\Contracts\Role;
+use function get_class;
+
+trait HasBitacora
+{
+
+    /**
+     * Set the polymorphic relation.
+     *
+     * @return MorphMany
+     */
+    public function bitacoras(): MorphMany
+    {
+        return $this->morphMany(Bitacora::class, 'model');
+    }
+
+
+    /**
+     * Agrega un registro en la bitácora.
+     *
+     * @param string $setion    Nombre de la sección donde se registra la bitácora.
+     * @param string $titulo    Título o resumen del evento.
+     * @param string $comentario Comentario o detalle adicional del evento.
+     * @param string|null $icono Nombre del icono (ej. 'tabler-message').
+     * @param string|null $color Color de UI (ej. 'primary', 'success').
+     * @param User|null $user Usuario relacionado (opcional).
+     *
+     * @return void
+     */
+    public function addBitacora($setion,$titulo,$comentario, string $icono = null, string $color = null,$user=null)
+    {
+        $bitacora = new Bitacora([
+            'seccion' => $setion,
+            'titulo' => $titulo,
+            'comentario' => $comentario,
+            'icono' => $icono,
+            'color' => $color,
+            'usuario_id' => $user ?? request()->user()->id ?? null,
+        ]);
+
+        $model = $this->getModel();
+
+        if ($model->exists) {
+            $this->bitacoras()->save($bitacora);
+            $model->load('bitacoras');
+        } else {
+            $class = get_class($model);
+
+            $class::saved(
+                function ($object) use ($bitacora, $model) {
+                    static $modelLastFiredOn;
+                    if ($modelLastFiredOn !== null && $modelLastFiredOn === $model) {
+                        return;
+                    }
+                    $object->bitacoras()->sync($bitacora, false);
+                    $object->load('bitacoras');
+                    $modelLastFiredOn = $object;
+                });
+        }
+
+        return $bitacora;
+    }
+    /**
+     * Revoke the given role from the model.
+     *
+     * @param string|Role $role
+     */
+    public function deleteBitacora($bitacora)
+    {
+        $this->bitacoras()->delete($bitacora);
+
+        $this->load('bitacoras');
+
+        return $bitacora;
+    }
+    public function generarComentarioCreacion(): string
+    {
+        $datos = $this->obtenerAtributosBitacora($this->getAttributes());
+
+        if (empty($datos)) {
+            return 'Se creó el registro.';
+        }
+
+        $partes = [];
+
+        foreach ($datos as $campo => $valor) {
+            $etiqueta = $this->obtenerEtiquetaBitacora($campo);
+            $valor = $this->transformarValorBitacora($campo, $valor);
+
+            $partes[] = "{$etiqueta}: '{$this->formatearValorBitacora($valor)}'";
+        }
+
+        return 'Se creó el registro con los valores: ' . implode(' | ', $partes);
+    }
+
+    public function generarComentarioActualizacion(): string
+    {
+        $originales = $this->getOriginal();
+        $actuales = $this->getAttributes();
+
+        $excepto = $this->obtenerCamposExcluidosBitacora();
+        $cambios = [];
+
+        foreach ($actuales as $campo => $valorActual) {
+            if (in_array($campo, $excepto, true)) {
+                continue;
+            }
+
+            $valorOriginal = $originales[$campo] ?? null;
+
+            if ($valorOriginal == $valorActual) {
+                continue;
+            }
+
+            $cambios[$campo] = [
+                'anterior' => $this->transformarValorBitacora($campo, $valorOriginal),
+                'nuevo'    => $this->transformarValorBitacora($campo, $valorActual),
+            ];
+        }
+
+        if (empty($cambios)) {
+            return 'Se actualizó el registro sin cambios detectables.';
+        }
+
+        $partes = [];
+
+        foreach ($cambios as $campo => $valores) {
+            $etiqueta = $this->obtenerEtiquetaBitacora($campo);
+
+            $partes[] = "{$etiqueta}: '" .
+                $this->formatearValorBitacora($valores['anterior']) .
+                "' => '" .
+                $this->formatearValorBitacora($valores['nuevo']) . "'";
+        }
+
+        return 'Se actualizó el registro. Cambios: ' . implode(' | ', $partes);
+    }
+
+    public function generarComentarioEliminacion(): string
+    {
+        $datos = $this->obtenerAtributosBitacora($this->getAttributes());
+
+        if (empty($datos)) {
+            return 'Se eliminó el registro.';
+        }
+
+        $partes = [];
+
+        foreach ($datos as $campo => $valor) {
+            $etiqueta = $this->obtenerEtiquetaBitacora($campo);
+            $valor = $this->transformarValorBitacora($campo, $valor);
+
+            $partes[] = "{$etiqueta}: '{$this->formatearValorBitacora($valor)}'";
+        }
+
+        return 'Se eliminó el registro que tenía los valores: ' . implode(' | ', $partes);
+    }
+
+    protected function obtenerAtributosBitacora(array $atributos): array
+    {
+        $excepto = $this->obtenerCamposExcluidosBitacora();
+        $resultado = [];
+
+        foreach ($atributos as $campo => $valor) {
+            if (in_array($campo, $excepto, true)) {
+                continue;
+            }
+
+            $resultado[$campo] = $valor;
+        }
+
+        return $resultado;
+    }
+
+    protected function transformarValorBitacora(string $campo, $valor)
+    {
+        if (in_array($campo, $this->obtenerCamposOcultosBitacora(), true)) {
+            return '[PROTEGIDO]';
+        }
+
+        $booleanos = $this->obtenerBooleanosBitacora();
+
+        if (array_key_exists($campo, $booleanos)) {
+            $config = $booleanos[$campo];
+
+            if (is_array($config) && count($config) === 2) {
+                if (is_null($valor)) {
+                    return 'N/A';
+                }
+
+                return $valor ? $config[0] : $config[1];
+            }
+
+            if (is_null($valor)) {
+                return 'N/A';
+            }
+
+            return $valor ? 'Sí' : 'No';
+        }
+
+        if ($valor instanceof \Carbon\CarbonInterface) {
+            return $valor->format('d/m/Y H:i:s');
+        }
+
+        return $valor;
+    }
+
+    protected function formatearValorBitacora($valor): string
+    {
+        if (is_null($valor)) {
+            return 'NULL';
+        }
+
+        if (is_bool($valor)) {
+            return $valor ? 'true' : 'false';
+        }
+
+        if (is_array($valor) || is_object($valor)) {
+            return json_encode($valor, JSON_UNESCAPED_UNICODE);
+        }
+
+        return (string) $valor;
+    }
+
+    protected function obtenerEtiquetaBitacora(string $campo): string
+    {
+        $etiquetas = $this->obtenerEtiquetasBitacora();
+
+        if (array_key_exists($campo, $etiquetas)) {
+            return $etiquetas[$campo];
+        }
+
+        return ucfirst(str_replace('_', ' ', $campo));
+    }
+
+    protected function obtenerCamposExcluidosBitacora(): array
+    {
+        $default = ['created_at', 'updated_at', 'deleted_at'];
+
+        $modelo = property_exists($this, 'bitacoraExcepto')
+            ? (array) $this->bitacoraExcepto
+            : [];
+
+        return array_values(array_unique(array_merge($default, $modelo)));
+    }
+
+    protected function obtenerCamposOcultosBitacora(): array
+    {
+        return property_exists($this, 'bitacoraOcultos')
+            ? (array) $this->bitacoraOcultos
+            : [];
+    }
+
+    protected function obtenerEtiquetasBitacora(): array
+    {
+        return property_exists($this, 'bitacoraEtiquetas')
+            ? (array) $this->bitacoraEtiquetas
+            : [];
+    }
+
+    protected function obtenerBooleanosBitacora(): array
+    {
+        return property_exists($this, 'bitacoraBooleanos')
+            ? (array) $this->bitacoraBooleanos
+            : [];
+    }
+}

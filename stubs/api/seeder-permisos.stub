@@ -1,0 +1,42 @@
+<?php
+
+namespace {{ seederNamespace }};
+
+use App\Models\Role;
+use Illuminate\Database\Seeder;
+use App\Models\Permission;
+
+class {{ seederPermisosName }} extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+
+        $permisos = [
+            'listar {{ nombre_permiso }}',
+            'ver {{ nombre_permiso }}',
+            'crear {{ nombre_permiso }}',
+            'editar {{ nombre_permiso }}',
+            'eliminar {{ nombre_permiso }}',
+        ];
+
+        foreach ($permisos as $permiso) {
+            Permission::firstOrCreate([
+                'name' => $permiso,
+                'subject' => '{{ model }}',
+                'guard_name' => 'api',
+            ]);
+        }
+
+        $admin = Role::where('name', Role::ADMIN)
+            ->first();
+
+        $admin->givePermissionTo($permisos);
+
+    }
+
+}

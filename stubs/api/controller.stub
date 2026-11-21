@@ -1,0 +1,102 @@
+<?php
+
+namespace {{ controllerNamespace }};
+
+use App\Http\Controllers\AppBaseController;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use {{ requestNamespace }}\{{ createRequest }};
+use {{ requestNamespace }}\{{ updateRequest }};
+use {{ modelNamespace }}\{{ model }};
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Spatie\QueryBuilder\QueryBuilder;
+
+/**
+ * Class {{ controlador }}
+ */
+class {{ controlador }} extends AppBaseController implements HasMiddleware
+{
+
+    /**
+     * @return array
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('abilities:ver {{ nombre_permiso }}', only: ['index', 'show']),
+            new Middleware('abilities:crear {{ nombre_permiso }}', only: ['store']),
+            new Middleware('abilities:editar {{ nombre_permiso }}', only: ['update']),
+            new Middleware('abilities:eliminar {{ nombre_permiso }}', only: ['destroy']),
+        ];
+    }
+
+    /**
+     * Display a listing of the {{ tableNameM }}.
+     * GET|HEAD /{{ variable_plural }}
+     */
+    public function index(): JsonResponse
+    {
+        return $this->executeOperation(function () {
+            ${{ variable_plural }} = QueryBuilder::for({{ model }}::class)
+                ->allowedFilters({{ otro }})
+                ->allowedSorts({{ otro }})
+                ->defaultSort('-id') // Ordenar por defecto por fecha descendente
+                ->jsonPaginate(request('page.size') ?? 10);
+
+            return $this->sendResponse(${{ variable_plural }}, '{{ variable_plural }} recuperados con éxito.');
+        });
+    }
+
+    /**
+     * Store a newly created {{ model }} in storage.
+     * POST /{{ variable_plural }}
+     */
+    public function store({{ createRequest }} $request): JsonResponse
+    {
+       return $this->executeOperation(function () use ($request) {
+            $input = $request->all();
+
+            ${{ variable_plural }} = {{ model }}::create($input);
+
+            return $this->sendResponse(${{ variable_plural }}->toArray(), '{{ model }} creado con éxito.');
+       });
+    }
+
+    /**
+     * Display the specified {{ model }}.
+     * GET|HEAD /{{ variable_plural }}/{id}
+     */
+    public function show({{ model }} ${{ variable }})
+    {
+        return $this->executeOperation(function () use (${{ variable }}) {
+            ${{ variable }}->conAtributoAdicional($request->appends ?? []);
+            return $this->sendResponse(${{ variable }}->toArray(), '{{ model }} recuperado con éxito.');
+        });
+    }
+
+    /**
+    * Update the specified {{ model }} in storage.
+    * PUT/PATCH /{{ variable_plural }}/{id}
+    */
+    public function update({{ updateRequest }} $request, $id): JsonResponse
+    {
+        return $this->executeOperation(function () use ($request, $id) {
+            ${{ variable }} = {{ model }}::findOrFail($id);
+            ${{ variable }}->update($request->validated());
+            return $this->sendResponse(${{ variable }}, '{{ model }} actualizado con éxito.');
+        });
+    }
+
+    /**
+    * Remove the specified {{ model }} from storage.
+    * DELETE /{{ variable_plural }}/{id}
+    */
+    public function destroy({{ model }} ${{ variable }}): JsonResponse
+    {
+        return $this->executeOperation(function () use (${{ variable }}) {
+            ${{ variable }}->delete();
+            return $this->sendResponse(null, '{{ model }} eliminado con éxito.');
+        });
+    }
+}

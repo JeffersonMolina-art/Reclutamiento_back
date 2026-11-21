@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models;
+
+use Spatie\Permission\Models\Role as SpatieRole;
+
+class Role extends SpatieRole
+{
+
+    protected $table = 'reclutamiento.roles';
+
+    const ALL_EMPLEADOS = "All Empleados";
+    const ALL_EMPLEADOS_ID = 34;
+
+    const ADMIN = "Admin";
+    const ADMIN_ID = 78;
+
+    public function getPermisosSeparadosComaAttribute(): string
+    {
+        return $this->permissions->pluck('name')->implode(', ');
+    }
+
+}
