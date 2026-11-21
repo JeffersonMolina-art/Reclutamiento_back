@@ -226,6 +226,11 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
     public function destroy(Vacante $vacante): JsonResponse
     {
         return $this->executeTransaction(function () use ($vacante) {
+            if ($vacante->postulaciones()->exists()) {
+                return response()->json([
+                    'message' => 'No se puede eliminar la vacante porque tiene postulaciones registradas.',
+                ], 409);
+            }
             $vacante->addBitacora(
                 'Vacante',
                 'Vacante eliminada',

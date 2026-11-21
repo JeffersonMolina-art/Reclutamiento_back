@@ -13,7 +13,7 @@ class Vacante extends Model
 {
     use SoftDeletes, HasBitacora;
 
-    public const ESTADO_PUBLICADA = 'publicada';
+    public const ESTADO_PUBLICADA = 2;
 
     protected array $bitacoraEtiquetas = [
         'estado_id' => 'Estado',
@@ -71,7 +71,7 @@ class Vacante extends Model
     public function scopePublicas(Builder $query): Builder
     {
         return $query
-            ->whereHas('estado', fn (Builder $q) => $q->where('codigo', self::ESTADO_PUBLICADA))
+            ->whereHas('estado', fn (Builder $q) => $q->where('estado_id', self::ESTADO_PUBLICADA))
             ->whereNotNull('fecha_publicacion')
             ->whereDate('fecha_publicacion', '<=', now());
     }

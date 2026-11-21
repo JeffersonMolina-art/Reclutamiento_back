@@ -17,9 +17,8 @@ class VacantesSeeder extends Seeder
      */
     public function run(): void
     {
-        $userId = User::where('usuario_dominio', 'gyjefmolina')->value('id');
+        $userId = User::where('usuario_dominio', 'gyreclutador1')->value('id');
         $estadoPublicada = VacanteEstado::where('codigo', 'publicada')->value('id');
-        $estadoBorrador = VacanteEstado::where('codigo', 'borrador')->value('id');
         $sedeJalapa = Sede::where('nombre', 'Agencia Jalapa')->value('id');
         $sedeGuastatoya = Sede::where('nombre', 'Agencia Guastatoya')->value('id');
 
@@ -30,7 +29,7 @@ class VacantesSeeder extends Seeder
                 'estado_id' => $estadoPublicada,
                 'sede_id' => $sedeJalapa,
                 'descripcion' => 'Análisis de perfiles y gestión de procesos de reclutamiento.',
-                'cantidad_plazas' => 2,
+                'cantidad_plazas' => 3,
                 'modalidad_trabajo' => 'hibrido',
                 'salario_minimo' => 8000,
                 'salario_maximo' => 12000,
@@ -53,7 +52,7 @@ class VacantesSeeder extends Seeder
             [
                 'nombre' => 'Asistente de Recursos Humanos',
                 'puesto' => 'Asistente de Recursos Humanos',
-                'estado_id' => $estadoBorrador,
+                'estado_id' => $estadoPublicada,
                 'sede_id' => $sedeGuastatoya,
                 'descripcion' => 'Apoyo administrativo en procesos de Recursos Humanos.',
                 'cantidad_plazas' => 3,
