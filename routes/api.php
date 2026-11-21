@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Configuraciones\ConfiguracionApiController;
+use App\Http\Controllers\Api\Publico\CandidatoPublicoApiController;
 use App\Http\Controllers\Api\Publico\VacantePublicaApiController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,8 +21,12 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
 });
 
 // APIS EXPUESTAS SIN AUTENTICACION
-Route::prefix('publico')->name('publico.')->middleware('throttle:60,1')->group(function () {
+Route::prefix('publico')->name('publico.')->middleware('throttle:publico')->group(function () {
     Route::get('vacantes', [VacantePublicaApiController::class, 'index'])->name('vacantes.index');
+
+    Route::post('candidatos/registro', [CandidatoPublicoApiController::class, 'registro'])
+        ->middleware('throttle:registro-candidato')
+        ->name('candidatos.registro');
 });
 
 

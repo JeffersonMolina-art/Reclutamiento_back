@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('tercer_nombre', 45)->nullable();
             $table->string('primer_apellido', 45);
             $table->string('segundo_apellido', 45)->nullable();
+            $table->string('dpi', 13)->nullable();
             $table->string('correo_contacto', 100);
             $table->string('telefono_contacto', 12);
             $table->date('fecha_nacimiento');
