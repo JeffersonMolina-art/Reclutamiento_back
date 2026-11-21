@@ -2,6 +2,7 @@
 use App\Http\Controllers\Api\BandejaApiController;
 use App\Http\Controllers\Api\Catalogos\GerenciaApiController;
     use App\Http\Controllers\Api\DepartamentoApiController;
+    use App\Http\Controllers\Api\EntrevistaEstadoApiController;
     use App\Http\Controllers\Api\PermisoApiController;
 use App\Http\Controllers\Api\Catalogos\PuestoApiController;
 use App\Http\Controllers\Api\Catalogos\RegionApiController;
@@ -22,5 +23,5 @@ Route::prefix('catalogo')->name('catalogo.')->group(function () {
     // RUTAS CATALOGO
     Route::apiResource('bandeja', BandejaApiController::class)->parameters(['bandeja' => 'bandeja']);
     Route::apiResource('departamentos', DepartamentoApiController::class)->parameters(['departamentos' => 'departamento']);
-
+    Route::apiResource('entrevistas_estado', EntrevistaEstadoApiController::class)->parameters(['entrevistas_estado' => 'entrevistaestado']);
 });
