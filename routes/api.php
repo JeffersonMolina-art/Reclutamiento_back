@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Configuraciones\ConfiguracionApiController;
+use App\Http\Controllers\Api\Publico\VacantePublicaApiController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/Auth/api.php';
@@ -19,7 +20,9 @@ Route::middleware('auth:sanctum')->name('api.')->group(function () {
 });
 
 // APIS EXPUESTAS SIN AUTENTICACION
-Route::get('configuracion', [ConfiguracionApiController::class, 'index'])->name('configuracion.index');
+Route::prefix('publico')->name('publico.')->middleware('throttle:60,1')->group(function () {
+    Route::get('vacantes', [VacantePublicaApiController::class, 'index'])->name('vacantes.index');
+});
 
 
 
