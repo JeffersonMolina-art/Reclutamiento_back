@@ -13,6 +13,7 @@
                 'Analista de Reclutamiento',
                 'Secretario de Recursos Humanos',
                 'Jefe de Recursos Humanos',
+                'Subjefe de Recursos Humanos',
                 'Reclutador de Personal',
                 'Coordinador de Reclutamiento y Selección',
                 'Asistente de Recursos Humanos',

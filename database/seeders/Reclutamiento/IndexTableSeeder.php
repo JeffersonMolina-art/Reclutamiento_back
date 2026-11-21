@@ -18,6 +18,7 @@ class IndexTableSeeder extends Seeder
             GerenciaTableSeeder::class,
             UnidadesSeeder::class,
             PuestoTableSeeder::class,
+            UsuariosReclutamientoSeeder::class,
             UserExternoEstadoTableSeeder::class,
             VacantesEstadosSeeder::class,
             EntrevistasEstadosSeeder::class,
