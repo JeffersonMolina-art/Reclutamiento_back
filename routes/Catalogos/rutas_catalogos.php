@@ -1,6 +1,5 @@
 <?php
-
-
+use App\Http\Controllers\Api\BandejaApiController;
 use App\Http\Controllers\Api\Catalogos\GerenciaApiController;
 use App\Http\Controllers\Api\PermisoApiController;
 use App\Http\Controllers\Api\Catalogos\PuestoApiController;
@@ -19,4 +18,8 @@ Route::prefix('catalogo')->name('catalogo.')->group(function () {
         'roles' => RoleApiController::class,
         'permissions' => PermisoApiController::class,
     ]);
+
+    Route::apiResource('bandeja', BandejaApiController::class)
+        ->parameters(['bandeja' => 'bandeja']);
+
 });
