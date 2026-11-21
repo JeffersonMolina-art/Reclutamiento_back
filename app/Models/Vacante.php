@@ -45,6 +45,16 @@ class Vacante extends Model
             ->whereDate('fecha_publicacion', '<=', now());
     }
 
+    public function scopeSinPostulacionDe(Builder $query, int $candidatoId): Builder
+    {
+        return $query->whereDoesntHave('postulaciones', fn (Builder $q) => $q->where('candidato_id', $candidatoId));
+    }
+
+    public function postulaciones(): HasMany
+    {
+        return $this->hasMany(Postulacion::class, 'vacante_id');
+    }
+
     public function estado(): BelongsTo
     {
         return $this->belongsTo(VacanteEstado::class, 'estado_id');
