@@ -60,8 +60,6 @@ class UserApicontroller extends AppBaseController implements HasMiddleware
                     AllowedFilter::exact('region_id'),
                     AllowedFilter::exact('unidad_id'),
                     AllowedFilter::exact('gerencia_id'),
-                    AllowedFilter::custom('por_unidad', new UsuariosPorUnidadFilter()),
-                    AllowedFilter::custom('por_region', new UsuariosPorRegionFilter()),
                 )
                 ->allowedFields(
                     'id',

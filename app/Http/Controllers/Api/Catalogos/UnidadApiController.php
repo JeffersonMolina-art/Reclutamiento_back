@@ -49,7 +49,6 @@ class UnidadApiController extends AppbaseController
                     'codigo_aprobador',
                     'grupo_aprobador',
                     'codigo_area_t24',
-                    AllowedFilter::custom('usuario_unidad', new UnidadUsuario()),
                 )
                 ->allowedIncludes()
                 ->allowedSorts(
