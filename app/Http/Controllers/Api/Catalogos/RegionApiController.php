@@ -8,6 +8,8 @@ use App\Http\Requests\Api\UpdateRegionApiRequest;
 use App\Models\Region;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -15,10 +17,21 @@ use Spatie\QueryBuilder\QueryBuilder;
 /**
  * Class RegionApiController
  */
-class RegionApiController extends AppbaseController
+class RegionApiController extends AppBaseController implements HasMiddleware
 {
 
-
+    /**
+     * @return array
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('abilities:ver regiones', only: ['index', 'show']),
+            new Middleware('abilities:crear regiones', only: ['store']),
+            new Middleware('abilities:editar regiones', only: ['update']),
+            new Middleware('abilities:eliminar regiones', only: ['destroy']),
+        ];
+    }
     /**
      * Display a listing of the Regiones.
      * GET|HEAD /regions
