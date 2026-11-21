@@ -28,6 +28,8 @@ class IndexTableSeeder extends Seeder
             UserExternoEstadoPermisosTableSeeder::class,
             VacanteEstadoPermisosTableSeeder::class,
             VacantePermisosTableSeeder::class,
+            PostulacionPermisosTableSeeder::class,
+            UsuariosReclutamientoPermisosTableSeeder::class,
         ]);
     }
 }

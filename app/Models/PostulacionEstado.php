@@ -1,102 +1,101 @@
 <?php
 
-namespace App\Models;
+    namespace App\Models;
 
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-/**
- * @property int $id
- * @property string $nombre
- * @property int $bandeja_id
- * @property string $codigo
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Bandeja|null $bandeja
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereBandejaId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereCodigo($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereNombre($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado withTrashed(bool $withTrashed = true)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado withoutTrashed()
- * @mixin \Eloquent
- */
-class PostulacionEstado extends Model
-{
-
-    use SoftDeletes;
-    use HasFactory;
-
-    protected $table = 'reclutamiento.postulacion_estado';
-
-
-    protected $fillable =
-        [
-    'nombre',
-    'bandeja_id',
-    'codigo'
-];
-
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Database\Eloquent\SoftDeletes;
+    use Illuminate\Database\Eloquent\Factories\HasFactory;
 
     /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array
+     * @property int $id
+     * @property string $nombre
+     * @property int $bandeja_id
+     * @property string $codigo
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property-read \App\Models\Bandeja|null $bandeja
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado onlyTrashed()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereBandejaId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereCodigo($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereNombre($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado withTrashed(bool $withTrashed = true)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PostulacionEstado withoutTrashed()
+     * @mixin \Eloquent
      */
-    protected $casts =
-        [
-        'id' => 'integer',
-        'nombre' => 'string',
-        'bandeja_id' => 'integer',
-        'codigo' => 'string',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
-    ];
-
-
-
-    /**
-     * Validation rules
-     *
-     * @var array
-     */
-    public static $rules =
-    [
-    'nombre' => 'required|string|max:90',
-    'bandeja_id' => 'required|integer',
-    'codigo' => 'required|string|max:60|unique:reclutamiento.postulacion_estado,codigo',
-];
-
-
-    /**
-     * Custom messages for validation
-     *
-     * @var array
-     */
-    public static $messages =[
-
-    ];
-
-
-    /**
-     * Accessor for relationships
-     *
-     * @var array
-     */
-    public function bandeja()
+    class PostulacionEstado extends Model
     {
-    return $this->belongsTo(Bandeja::class,'bandeja_id','id');
-    }
 
-}
+        use SoftDeletes;
+        use HasFactory;
+
+        protected $table = 'reclutamiento.postulacion_estado';
+
+
+        protected $fillable =
+            [
+                'nombre',
+                'bandeja_id',
+                'codigo'
+            ];
+
+
+        /**
+         * The attributes that should be casted to native types.
+         *
+         * @var array
+         */
+        protected $casts =
+            [
+                'id' => 'integer',
+                'nombre' => 'string',
+                'bandeja_id' => 'integer',
+                'codigo' => 'string',
+                'created_at' => 'datetime',
+                'updated_at' => 'datetime',
+                'deleted_at' => 'datetime',
+            ];
+
+
+        /**
+         * Validation rules
+         *
+         * @var array
+         */
+        public static $rules =
+            [
+                'nombre' => 'required|string|max:90',
+                'bandeja_id' => 'required|integer',
+                'codigo' => 'required|string|max:60|unique:reclutamiento.postulacion_estado,codigo',
+            ];
+
+
+        /**
+         * Custom messages for validation
+         *
+         * @var array
+         */
+        public static $messages = [
+
+        ];
+
+
+        /**
+         * Accessor for relationships
+         *
+         * @var array
+         */
+        public function bandeja()
+        {
+            return $this->belongsTo(Bandeja::class, 'bandeja_id', 'id');
+        }
+
+    }

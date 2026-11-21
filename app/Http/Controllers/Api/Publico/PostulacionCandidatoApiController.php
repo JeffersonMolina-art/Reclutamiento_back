@@ -12,6 +12,7 @@ use App\Models\Vacante;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PostulacionCandidatoApiController extends AppBaseController
 {
@@ -126,17 +127,20 @@ class PostulacionCandidatoApiController extends AppBaseController
                     'fecha_postulacion' => now()->toDateString(),
                     'fuente_reclutamiento' => 'portal_empleo',
                 ]);
+
+                if ($vacante->user_encargado) {
+                    $postulacion->asignacion()->create([
+                        'users_id' => $vacante->user_encargado,
+                        'bandeja_id' => $postulacion->estado()->value('bandeja_id'),
+                        'nombre' => Str::limit($vacante->encargado?->nombre_completo ?? '', 45, ''),
+                    ]);
+                }
+
             } catch (UniqueConstraintViolationException) {
                 return response()->json(['message' => 'Ya te postulaste a esta vacante.'], 409);
             }
 
-            SeguimientoPostulacion::create([
-                'postulacion_id' => $postulacion->id,
-                'estado_id' => Postulacion::ESTADO_INICIAL,
-                'comentario' => 'Postulación recibida',
-                'porcentaje' => 0,
-                'fecha_cambio' => now(),
-            ]);
+            $postulacion->registrarSeguimiento(Postulacion::ESTADO_INICIAL, null, 'Postulación recibida', null, 0);
 
             return response()->json([
                 'message' => 'Te postulaste correctamente.',

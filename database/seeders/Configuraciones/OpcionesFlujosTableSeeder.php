@@ -38,6 +38,29 @@ class OpcionesFlujosTableSeeder extends Seeder
                 'orden' => MenuOpcion::max('orden') + 1,
             ]);
 
+        MenuOpcion::updateOrCreate(
+            ['titulo_seccion' => 'Postulaciones', 'ruta' => null],
+            [
+                'titulo' => null,
+                'icono' => null,
+                'action' => 'listar postulaciones',
+                'subject' => 'Postulacion',
+                'parent_id' => null,
+                'orden' => MenuOpcion::max('orden') + 1,
+            ]);
+
+        MenuOpcion::updateOrCreate(
+            ['titulo' => 'Postulaciones'],
+            [
+                'ruta' => 'postulaciones-asignadas',
+                'icono' => 'tabler-briefcase',
+                'action' => 'ver postulaciones',
+                'subject' => 'Postulacion',
+                'titulo_seccion' => null,
+                'parent_id' => null,
+                'orden' => MenuOpcion::max('orden') + 1,
+            ]);
+
         Permission::firstOrCreate(['name' => 'modulo reclutamiento', 'subject' => 'reclutamiento', 'guard_name' => 'api']);
         Role::whereIn('name', Role::ROLES_ADMINISTRATIVOS)->get()->each->givePermissionTo('modulo reclutamiento');
     }

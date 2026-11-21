@@ -17,8 +17,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ConfiguracionesIndexTableSeeder::class,
-            PermisosIndexTableSeeder::class,
             ReclutamientoIndexTableSeeder::class,
+            PermisosIndexTableSeeder::class,
         ]);
     }
 }
