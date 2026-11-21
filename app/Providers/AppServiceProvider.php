@@ -37,6 +37,10 @@ class AppServiceProvider extends ServiceProvider
             Limit::perHour(20)->by('registro|ip-hora|' . $request->ip()),
             Limit::perHour(5)->by('registro|email|' . mb_strtolower((string) $request->input('email'))),
         ]);
+        RateLimiter::for('login-candidato', fn (Request $request) => [
+            Limit::perMinute(10)->by('login|ip|' . $request->ip()),
+            Limit::perMinute(5)->by('login|ip-email|' . $request->ip() . '|' . mb_strtolower((string) $request->input('email'))),
+        ]);
 
     }
 }

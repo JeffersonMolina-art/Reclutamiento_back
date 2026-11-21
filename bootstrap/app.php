@@ -25,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'abilities' => \App\Http\Middleware\CustomCheckAbilities::class,
             'ability' => \App\Http\Middleware\CustomCheckAbility::class,
+            'interno' => \App\Http\Middleware\SoloUsuarioInterno::class,
+            'candidato' => \App\Http\Middleware\SoloCandidato::class,
         ]);
 
     })

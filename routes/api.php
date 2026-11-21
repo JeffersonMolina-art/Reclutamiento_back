@@ -1,13 +1,14 @@
 <?php
 
 use App\Http\Controllers\Api\Configuraciones\ConfiguracionApiController;
+use App\Http\Controllers\Api\Publico\CandidatoAuthApiController;
 use App\Http\Controllers\Api\Publico\CandidatoPublicoApiController;
 use App\Http\Controllers\Api\Publico\VacantePublicaApiController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/Auth/api.php';
 
-Route::middleware('auth:sanctum')->name('api.')->group(function () {
+Route::middleware(['auth:sanctum', 'interno'])->name('api.')->group(function () {
 
 
 
@@ -27,6 +28,16 @@ Route::prefix('publico')->name('publico.')->middleware('throttle:publico')->grou
     Route::post('candidatos/registro', [CandidatoPublicoApiController::class, 'registro'])
         ->middleware('throttle:registro-candidato')
         ->name('candidatos.registro');
+
+    Route::post('candidatos/login', [CandidatoAuthApiController::class, 'login'])
+        ->middleware('throttle:login-candidato')
+        ->name('candidatos.login');
+});
+
+// PORTAL DEL CANDIDATO
+Route::prefix('portal')->name('portal.')->middleware(['auth:sanctum', 'candidato'])->group(function () {
+    Route::get('me', [CandidatoAuthApiController::class, 'me'])->name('me');
+    Route::post('logout', [CandidatoAuthApiController::class, 'logout'])->name('logout');
 });
 
 

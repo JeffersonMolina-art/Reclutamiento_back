@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->name('api.auth.')->group(function () {
     Route::post('login', [AuthApiController::class, 'login'])->name('login');
     Route::post('logout', [AuthApiController::class, 'logout'])
-        ->middleware('auth:sanctum')->name('logout');
+        ->middleware(['auth:sanctum', 'interno'])->name('logout');
     Route::prefix('doble-factor')->name('doble.factor.')->group(function () {
 
         Route::get('generar-qr/{user}', [AuthDobleFactorApiController::class, 'crearQr']);
@@ -33,4 +33,4 @@ Route::prefix('auth')->name('api.auth.')->group(function () {
 
 Route::get('/user', function (Request $request) {
     return $request->user()->userResponse();
-})->middleware('auth:sanctum')->name('api.user');
+})->middleware(['auth:sanctum', 'interno'])->name('api.user');
