@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasBitacora;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,9 +11,24 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Vacante extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasBitacora;
 
     public const ESTADO_PUBLICADA = 'publicada';
+
+    protected array $bitacoraEtiquetas = [
+        'estado_id' => 'Estado',
+        'puesto_id' => 'Puesto',
+        'sede_id' => 'Sede',
+        'nombre' => 'Nombre',
+        'descripcion' => 'Descripción',
+        'cantidad_plazas' => 'Cantidad de plazas',
+        'user_id' => 'Creado por',
+        'fecha_publicacion' => 'Fecha de publicación',
+        'user_encargado' => 'Encargado',
+        'modalidad_trabajo' => 'Modalidad de trabajo',
+        'salario_minimo' => 'Salario mínimo',
+        'salario_maximo' => 'Salario máximo',
+    ];
 
     protected $table = 'reclutamiento.vacantes';
 
