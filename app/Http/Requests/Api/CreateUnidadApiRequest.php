@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Api;
 
-use App\Models\Unidad;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Unidad;
 
 
 class CreateUnidadApiRequest extends FormRequest
@@ -15,9 +15,7 @@ class CreateUnidadApiRequest extends FormRequest
 
     public function rules()
     {
-
-           return Unidad::$rules;
-
+        return Unidad::$rules;
     }
 }
 
