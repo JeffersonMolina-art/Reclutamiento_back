@@ -27,7 +27,6 @@ Route::prefix('catalogo')->name('catalogo.')->group(function () {
     Route::apiResource('bandeja', BandejaApiController::class)->parameters(['bandeja' => 'bandeja']);
     Route::apiResource('departamentos', DepartamentoApiController::class)->parameters(['departamentos' => 'departamento']);
     Route::apiResource('entrevistas_estado', EntrevistaEstadoApiController::class)->parameters(['entrevistas_estado' => 'entrevistaestado']);
-    Route::apiResource('gerencias', GerenciaApiController::class)->parameters(['gerencias' => 'gerencia']);
     Route::apiResource('municipios', MunicipioApiController::class)->parameters(['municipios' => 'municipio']);
     Route::apiResource('pais', PaisApiController::class)->parameters(['pais' => 'pais']);
     Route::apiResource('postulacion_estado', PostulacionEstadoApiController::class)->parameters(['postulacion_estado' => 'postulacionestado']);

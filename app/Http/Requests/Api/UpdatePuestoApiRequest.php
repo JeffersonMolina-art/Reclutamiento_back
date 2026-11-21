@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Api;
 
-use App\Models\Puesto;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Puesto;
 
 class UpdatePuestoApiRequest extends FormRequest
 {
@@ -14,9 +14,7 @@ class UpdatePuestoApiRequest extends FormRequest
 
     public function rules()
     {
-
-            return Puesto::$rules;
-
+        return Puesto::$rules;
     }
 }
 
