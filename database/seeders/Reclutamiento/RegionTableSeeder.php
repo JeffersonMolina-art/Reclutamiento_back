@@ -1,18 +1,22 @@
 <?php
 
-namespace Database\Seeders\Reclutamiento;
+    namespace Database\Seeders\Reclutamiento;
 
-use Illuminate\Database\Seeder;
+    use App\Models\Region;
+    use Illuminate\Database\Seeder;
 
-class RegionTableSeeder extends Seeder
-{
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    class RegionTableSeeder extends Seeder
     {
-        //agregar la logica para crear registros en la tabla
+        public function run(): void
+        {
+            $regiones = [
+                'Región 1',
+                'Región 2',
+                'Región 3',
+            ];
+
+            foreach ($regiones as $nombre) {
+                Region::updateOrCreate(['nombre' => $nombre, 'estado' => 'Activo']);
+            }
+        }
     }
-}

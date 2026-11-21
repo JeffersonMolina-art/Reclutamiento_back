@@ -21,7 +21,7 @@ class UserExternoEstadoTableSeeder extends Seeder
         ];
 
         foreach ($estados as $nombre) {
-            UserExternoEstado::updateOrCreate(['nombre' => $nombre]);
+            UserExternoEstado::updateOrCreate(['nombre' => $nombre, 'codigo' => strtoupper(substr($nombre, 0, 3))]);
         }
     }
 }

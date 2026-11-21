@@ -15,6 +15,9 @@ class Role extends SpatieRole
     const ADMIN = "Admin";
     const ADMIN_ID = 78;
 
+    // Roles creados en RolesPermisosBasicos que reciben todos los permisos
+    const ROLES_ADMINISTRATIVOS = ['Super Administrador', 'Administrador', 'Dev'];
+
     public function getPermisosSeparadosComaAttribute(): string
     {
         return $this->permissions->pluck('name')->implode(', ');

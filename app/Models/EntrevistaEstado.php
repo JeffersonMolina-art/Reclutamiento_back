@@ -68,7 +68,7 @@ class EntrevistaEstado extends Model
      */
     public static $rules =
     [
-    'nombre' => 'required|string|max:510',
+    'nombre' => 'required|string|max:255',
     'codigo' => 'required|string|max:60|unique:reclutamiento.entrevistas_estado,codigo',
 ];
 

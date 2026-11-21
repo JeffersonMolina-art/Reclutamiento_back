@@ -1,6 +1,6 @@
 <?php
 
-namespace database\seeders\permisos;
+namespace Database\Seeders\permisos;
 
 use App\Models\Permission;
 use App\Models\Role;
@@ -32,10 +32,7 @@ class UserExternoEstadoPermisosTableSeeder extends Seeder
             ]);
         }
 
-        $admin = Role::where('name', Role::ADMIN)
-            ->first();
-
-        $admin->givePermissionTo($permisos);
+        Role::whereIn('name', Role::ROLES_ADMINISTRATIVOS)->get()->each->givePermissionTo($permisos);
 
     }
 

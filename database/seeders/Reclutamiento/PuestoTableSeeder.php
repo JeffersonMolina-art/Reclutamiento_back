@@ -23,7 +23,10 @@
             ];
 
             foreach ($puestos as $nombre) {
-                Puesto::updateOrCreate(['nombre' => $nombre]);
+                Puesto::updateOrCreate(
+                    ['nombre' => $nombre],
+                    ['estado' => 'Activo']
+                );
             }
         }
     }

@@ -16,7 +16,7 @@
             ];
 
             foreach ($gerencias as $nombre) {
-                Gerencia::updateOrCreate(['nombre' => $nombre]);
+                Gerencia::updateOrCreate(['nombre' => $nombre], ['estado' => 'Activo']);
             }
         }
     }

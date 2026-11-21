@@ -36,8 +36,8 @@
 
             foreach ($departamentos as $nombre) {
                 Departamento::updateOrCreate([
-                    'pais_id' => 1,
                     'nombre' => $nombre,
+                    'estado' => 'Activo',
                 ]);
             }
         }

@@ -39,7 +39,6 @@
             $nombresDepartamentos = array_keys($municipiosPorDepartamento);
 
             $departamentos = Departamento::query()
-                ->where('pais_id', 1)
                 ->whereIn('nombre', $nombresDepartamentos)
                 ->pluck('id', 'nombre')
                 ->all();
@@ -48,7 +47,7 @@
 
             if ($faltantes !== []) {
                 throw new RuntimeException(
-                    'Faltan departamentos para el país 1: ' . implode(', ', $faltantes)
+                    'Faltan departamentos: ' . implode(', ', $faltantes)
                 );
             }
 
@@ -57,6 +56,7 @@
                     Municipio::updateOrCreate([
                         'departamento_id' => $departamentos[$departamento],
                         'nombre' => $nombre,
+                        'estado' => 'Activo',
                     ]);
                 }
             }

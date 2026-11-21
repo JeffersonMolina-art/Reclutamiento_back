@@ -15,11 +15,14 @@ class PaisTableSeeder extends Seeder
     public function run()
     {
         $paises = [
-            'Guatemala',
+            'Guatemala' => 'Guatemalteca',
         ];
 
-        foreach ($paises as $nombre) {
-            Pais::updateOrCreate(['nombre' => $nombre]);
+        foreach ($paises as $nombre => $nacionalidad) {
+            Pais::updateOrCreate(
+                ['nombre' => $nombre],
+                ['nacionalidad' => $nacionalidad, 'estado' => 'Activo']
+            );
         }
     }
 }

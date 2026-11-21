@@ -1,49 +1,48 @@
 <?php
 
-namespace Database\Seeders\Reclutamiento;
+    namespace Database\Seeders\Reclutamiento;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+    use App\Models\Bandeja;
+    use App\Models\PostulacionEstado;
+    use Illuminate\Database\Seeder;
 
-class PostulacionEstadosSeeder extends Seeder
-{
-    public function run(): void
+    class PostulacionEstadosSeeder extends Seeder
     {
-        $ahora = now();
+        public function run(): void
+        {
+            $bandejas = [
+                'recibidas' => 'Recibidas',
+                'en_proceso' => 'En proceso',
+                'finalizadas' => 'Finalizadas',
+            ];
 
-        $bandejas = [
-            'recibidas' => 'Recibidas',
-            'en_proceso' => 'En proceso',
-            'finalizadas' => 'Finalizadas',
-        ];
+            $bandejaIds = [];
 
-        foreach ($bandejas as $codigo => $nombre) {
-            DB::table('reclutamiento.bandeja')->updateOrInsert(
-                ['codigo' => $codigo],
-                ['nombre' => $nombre, 'created_at' => $ahora, 'updated_at' => $ahora]
-            );
-        }
+            foreach ($bandejas as $codigo => $nombre) {
+                $bandeja = Bandeja::updateOrCreate(
+                    ['codigo' => $codigo],
+                    ['nombre' => $nombre]
+                );
 
-        $bandejaIds = DB::table('reclutamiento.bandeja')->pluck('id', 'codigo');
+                $bandejaIds[$codigo] = $bandeja->getKey();
+            }
 
-        $estados = [
-            ['recibida', 'Recibida', 'recibidas'],
-            ['en_revision', 'En revisión', 'en_proceso'],
-            ['entrevista', 'Entrevista', 'en_proceso'],
-            ['contratado', 'Contratado', 'finalizadas'],
-            ['descartada', 'Descartada', 'finalizadas'],
-        ];
+            $estados = [
+                ['recibida', 'Recibida', 'recibidas'],
+                ['en_revision', 'En revisión', 'en_proceso'],
+                ['entrevista', 'Entrevista', 'en_proceso'],
+                ['contratado', 'Contratado', 'finalizadas'],
+                ['descartada', 'Descartada', 'finalizadas'],
+            ];
 
-        foreach ($estados as [$codigo, $nombre, $bandeja]) {
-            DB::table('reclutamiento.postulacion_estado')->updateOrInsert(
-                ['codigo' => $codigo],
-                [
-                    'nombre' => $nombre,
-                    'bandeja_id' => $bandejaIds[$bandeja],
-                    'created_at' => $ahora,
-                    'updated_at' => $ahora,
-                ]
-            );
+            foreach ($estados as [$codigo, $nombre, $codigoBandeja]) {
+                PostulacionEstado::updateOrCreate(
+                    ['codigo' => $codigo],
+                    [
+                        'nombre' => $nombre,
+                        'bandeja_id' => $bandejaIds[$codigoBandeja],
+                    ]
+                );
+            }
         }
     }
-}
