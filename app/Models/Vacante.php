@@ -48,9 +48,24 @@ class Vacante extends Model
     ];
 
     protected $casts = [
+        'id' => 'integer',
+        'estado_id' => 'integer',
+        'puesto_id' => 'integer',
+        'sede_id' => 'integer',
+        'user_id' => 'integer',
+        'user_encargado' => 'integer',
+        'cantidad_plazas' => 'integer',
         'fecha_publicacion' => 'date',
         'salario_minimo' => 'decimal:2',
         'salario_maximo' => 'decimal:2',
+    ];
+
+    protected $appends = [
+        'estado_nombre',
+        'puesto_nombre',
+        'sede_nombre',
+        'encargado_nombre',
+        'rango_salarial',
     ];
 
     public function scopePublicas(Builder $query): Builder
@@ -94,5 +109,42 @@ class Vacante extends Model
     public function requisitos(): HasMany
     {
         return $this->hasMany(VacanteRequisito::class, 'vacante_id');
+    }
+
+    public function encargado(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_encargado');
+    }
+
+    public function getEstadoNombreAttribute(): ?string
+    {
+        return $this->estado?->nombre;
+    }
+
+    public function getPuestoNombreAttribute(): ?string
+    {
+        return $this->puesto?->nombre;
+    }
+
+    public function getSedeNombreAttribute(): ?string
+    {
+        return $this->sede?->nombre;
+    }
+
+    public function getEncargadoNombreAttribute(): ?string
+    {
+        return $this->encargado?->nombre_completo;
+    }
+
+    public function getRangoSalarialAttribute(): ?string
+    {
+        if ($this->salario_minimo === null || $this->salario_maximo === null) {
+            return null;
+        }
+
+        $minimo = number_format((float) $this->salario_minimo, 2);
+        $maximo = number_format((float) $this->salario_maximo, 2);
+
+        return "Q {$minimo} – Q {$maximo}";
     }
 }

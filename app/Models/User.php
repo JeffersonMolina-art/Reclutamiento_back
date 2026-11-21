@@ -127,11 +127,11 @@ class User extends Authenticatable implements HasMedia
     {
         return [
             'id' => 'integer',
+            'puesto_id' => 'integer',
+            'unidad_id' => 'integer',
+            'region_id' => 'integer',
+            'gerencia_id' => 'integer',
             'password' => 'hashed',
-            'puesto_id'=> 'integer',
-            'region_id'=> 'integer',
-            'unidad_id'=> 'integer',
-            'gerencia_id'=> 'integer',
             'two_factor_habilitado' => 'boolean',
         ];
     }
