@@ -10,6 +10,7 @@ use App\Http\Requests\Api\UpdateSedeApiRequest;
 use App\Models\Sede;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 /**
@@ -39,7 +40,7 @@ class SedeApiController extends AppBaseController implements HasMiddleware
     {
         return $this->executeOperation(function () {
             $sede = QueryBuilder::for(Sede::class)
-                ->allowedFilters('nombre')
+                ->allowedFilters(AllowedFilter::exact('id'), 'nombre')
                 ->allowedSorts('nombre')
                 ->defaultSort('-id') // Ordenar por defecto por fecha descendente
                 ->jsonPaginate(request('page.size') ?? 10);
