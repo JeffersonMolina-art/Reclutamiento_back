@@ -2,6 +2,7 @@
 
 namespace Database\Seeders\Reclutamiento;
 
+use App\Models\VacanteEstado;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -20,19 +21,10 @@ class VacantesEstadosSeeder extends Seeder
         ];
 
         foreach ($estados as $codigo => $nombre) {
-            $existe = DB::table('reclutamiento.vacantes_estados')->where('codigo', $codigo)->exists();
-
-            if ($existe) {
-                DB::table('reclutamiento.vacantes_estados')->where('codigo', $codigo)
-                    ->update(['nombre' => $nombre, 'updated_at' => now()]);
-            } else {
-                DB::table('reclutamiento.vacantes_estados')->insert([
-                    'codigo' => $codigo,
-                    'nombre' => $nombre,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
+            VacanteEstado::updateOrCreate(
+                ['codigo' => $codigo],
+                ['nombre' => $nombre]
+            );
         }
     }
 }
