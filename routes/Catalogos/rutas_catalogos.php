@@ -14,6 +14,7 @@
     use App\Http\Controllers\Api\Catalogos\UnidadApiController;
 
     use App\Http\Controllers\Api\SedeApiController;
+    use App\Http\Controllers\Api\UserExternoEstadoApiController;
     use Illuminate\Support\Facades\Route;
 
     Route::prefix('catalogo')->name('catalogo.')->group(function () {
@@ -33,5 +34,5 @@
         Route::apiResource('pais', PaisApiController::class)->parameters(['pais' => 'pais']);
         Route::apiResource('postulacion_estado', PostulacionEstadoApiController::class)->parameters(['postulacion_estado' => 'postulacionestado']);
         Route::apiResource('sede', SedeApiController::class)->parameters(['sede' => 'sede']);
-
+        Route::apiResource('usuario_externo_estados', UserExternoEstadoApiController::class)->parameters(['usuario_externo_estados' => 'userexternoestado']);
     });
