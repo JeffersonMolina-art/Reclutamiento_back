@@ -104,45 +104,23 @@ trait HasBitacora
 
     public function generarComentarioActualizacion(): string
     {
-        $originales = $this->getOriginal();
-        $actuales = $this->getAttributes();
+        $lineas = [];
 
-        $excepto = $this->obtenerCamposExcluidosBitacora();
-        $cambios = [];
-
-        foreach ($actuales as $campo => $valorActual) {
-            if (in_array($campo, $excepto, true)) {
-                continue;
-            }
-
-            $valorOriginal = $originales[$campo] ?? null;
-
-            if ($valorOriginal == $valorActual) {
-                continue;
-            }
-
-            $cambios[$campo] = [
-                'anterior' => $this->transformarValorBitacora($campo, $valorOriginal),
-                'nuevo'    => $this->transformarValorBitacora($campo, $valorActual),
-            ];
-        }
-
-        if (empty($cambios)) {
-            return 'Se actualizó el registro sin cambios detectables.';
-        }
-
-        $partes = [];
-
-        foreach ($cambios as $campo => $valores) {
+        foreach ($this->obtenerAtributosBitacora($this->getDirty()) as $campo => $_) {
             $etiqueta = $this->obtenerEtiquetaBitacora($campo);
 
-            $partes[] = "{$etiqueta}: '" .
-                $this->formatearValorBitacora($valores['anterior']) .
-                "' => '" .
-                $this->formatearValorBitacora($valores['nuevo']) . "'";
+            $anterior = $this->formatearValorBitacora(
+                $this->transformarValorBitacora($campo, $this->getOriginal($campo))
+            );
+
+            $nuevo = $this->formatearValorBitacora(
+                $this->transformarValorBitacora($campo, $this->getAttribute($campo))
+            );
+
+            $lineas[] = "{$etiqueta} cambió de «{$anterior}» a «{$nuevo}».";
         }
 
-        return 'Se actualizó el registro. Cambios: ' . implode(' | ', $partes);
+        return implode("\n", $lineas);
     }
 
     public function generarComentarioEliminacion(): string
@@ -208,7 +186,7 @@ trait HasBitacora
         }
 
         if ($valor instanceof \Carbon\CarbonInterface) {
-            return $valor->format('d/m/Y H:i:s');
+            return $valor->format('d/m/Y');
         }
 
         return $valor;
@@ -216,12 +194,12 @@ trait HasBitacora
 
     protected function formatearValorBitacora($valor): string
     {
-        if (is_null($valor)) {
-            return 'NULL';
+        if ($valor === null || $valor === '') {
+            return 'Sin definir';
         }
 
         if (is_bool($valor)) {
-            return $valor ? 'true' : 'false';
+            return $valor ? 'Sí' : 'No';
         }
 
         if (is_array($valor) || is_object($valor)) {

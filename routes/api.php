@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\Publico\CandidatoAuthApiController;
+    use App\Http\Controllers\Api\BitacoraApiController;
+    use App\Http\Controllers\Api\Publico\CandidatoAuthApiController;
 use App\Http\Controllers\Api\Publico\CandidatoPublicoApiController;
 use App\Http\Controllers\Api\Publico\VacantePublicaApiController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,8 @@ Route::middleware(['auth:sanctum', 'interno'])->name('api.')->group(function () 
     require __DIR__ . '/Configuraciones/api.php';
     require __DIR__ . '/Desarrollo/rutas_desarrollo.php';
     require __DIR__ . '/Exportar/Api.php';
+
+    Route::get('bitacoras', [BitacoraApiController::class, 'index']);
 
 });
 

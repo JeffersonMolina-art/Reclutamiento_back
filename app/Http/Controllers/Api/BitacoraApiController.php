@@ -36,20 +36,21 @@ class BitacoraApiController extends AppBaseController implements HasMiddleware
      * Display a listing of the Reclutamiento.bitacoras.
      * GET|HEAD /bitacoras
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return $this->executeOperation(function () {
-            $bitacoras = QueryBuilder::for(Bitacora::class)
+        return $this->executeOperation(function () use ($request) {
+            $bitacoras = QueryBuilder::for(Bitacora::class, $request)
                 ->allowedFilters(
                     AllowedFilter::exact('id'),
-                    'model_type',
+                    AllowedFilter::exact('model_type'),
                     AllowedFilter::exact('model_id'),
                     'seccion',
                     'titulo',
                     'comentario',
                     'icono',
                     'color',
-                    'usuario_id')
+                    'usuario_id'
+                )
                 ->allowedSorts(
                     'id',
                     'model_type',
@@ -59,11 +60,15 @@ class BitacoraApiController extends AppBaseController implements HasMiddleware
                     'comentario',
                     'icono',
                     'color',
-                    'usuario_id')
-                ->defaultSort('-id') // Ordenar por defecto por fecha descendente
-                ->jsonPaginate(request('page.size') ?? 10);
+                    'usuario_id'
+                )
+                ->defaultSort('-id')
+                ->jsonPaginate($request->input('page.size', 10));
 
-            return $this->sendResponse($bitacoras, 'bitacoras recuperados con éxito.');
+            return $this->sendResponse(
+                $bitacoras->toArray(),
+                'Bitácoras recuperadas con éxito.'
+            );
         });
     }
 
@@ -86,12 +91,11 @@ class BitacoraApiController extends AppBaseController implements HasMiddleware
      * Display the specified Bitacora.
      * GET|HEAD /bitacoras/{id}
      */
-    public function show(Bitacora $bitacora)
+    public function show(Bitacora $bitacora): JsonResponse
     {
-        return $this->executeOperation(function () use ($bitacora) {
-            $bitacora->conAtributoAdicional($request->appends ?? []);
-            return $this->sendResponse($bitacora->toArray(), 'Bitacora recuperado con éxito.');
-        });
+        return $this->executeOperation(fn () =>
+            $this->sendResponse($bitacora->toArray(), 'Bitácora recuperada con éxito.')
+        );
     }
 
     /**
