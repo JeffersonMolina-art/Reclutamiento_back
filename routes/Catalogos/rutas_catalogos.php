@@ -3,6 +3,7 @@ use App\Http\Controllers\Api\BandejaApiController;
 use App\Http\Controllers\Api\Catalogos\GerenciaApiController;
     use App\Http\Controllers\Api\DepartamentoApiController;
     use App\Http\Controllers\Api\EntrevistaEstadoApiController;
+    use App\Http\Controllers\Api\MunicipioApiController;
     use App\Http\Controllers\Api\PermisoApiController;
 use App\Http\Controllers\Api\Catalogos\PuestoApiController;
 use App\Http\Controllers\Api\Catalogos\RegionApiController;
@@ -25,4 +26,5 @@ Route::prefix('catalogo')->name('catalogo.')->group(function () {
     Route::apiResource('departamentos', DepartamentoApiController::class)->parameters(['departamentos' => 'departamento']);
     Route::apiResource('entrevistas_estado', EntrevistaEstadoApiController::class)->parameters(['entrevistas_estado' => 'entrevistaestado']);
     Route::apiResource('gerencias', GerenciaApiController::class)->parameters(['gerencias' => 'gerencia']);
+    Route::apiResource('municipios', MunicipioApiController::class)->parameters(['municipios' => 'municipio']);
 });
