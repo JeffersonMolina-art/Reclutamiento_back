@@ -19,7 +19,7 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
     public static function middleware(): array
     {
         return [
-            new Middleware('abilities:ver postulaciones', only: ['index', 'show', 'cv', 'listarArchivos', 'descargarArchivo']),
+            new Middleware('abilities:ver postulaciones', only: ['index', 'show', 'cv', 'contacto', 'listarArchivos', 'descargarArchivo']),
             new Middleware('abilities:editar postulaciones', only: ['update', 'comentar', 'subirArchivo', 'eliminarArchivo']),
             new Middleware('abilities:asignar postulaciones', only: ['asignar']),
         ];
@@ -88,6 +88,12 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
             $datos['estados_disponibles'] = PostulacionEstado::query()
                 ->whereKey($detalle->estadosDisponibles())
                 ->get(['id', 'codigo', 'nombre'])
+                ->toArray();
+
+            $datos['entrevistas'] = $detalle->entrevistas()
+                ->with('estado')
+                ->orderByDesc('id')
+                ->get()
                 ->toArray();
 
             $datos['cv'] = $cv ? [
@@ -184,6 +190,29 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
             ->findOrFail($postulacion->getKey());
 
         return $postulacion->media()->findOrFail($media)->toResponse($request);
+    }
+
+    public function contacto(Request $request, Postulacion $postulacion): JsonResponse
+    {
+        return $this->executeOperation(function () use ($request, $postulacion) {
+            $candidato = Postulacion::query()
+                ->visiblesPara($request->user())
+                ->with('candidato')
+                ->findOrFail($postulacion->getKey())
+                ->candidato;
+
+            return $this->sendResponse([
+                'nombre' => collect([
+                    $candidato->primer_nombre,
+                    $candidato->segundo_nombre,
+                    $candidato->tercer_nombre,
+                    $candidato->primer_apellido,
+                    $candidato->segundo_apellido,
+                ])->filter()->implode(' '),
+                'correo' => $candidato->correo_contacto,
+                'telefono' => $candidato->telefono_contacto,
+            ], 'Contacto del candidato recuperado con éxito.');
+        });
     }
 
     public function cv(Request $request, Postulacion $postulacion)

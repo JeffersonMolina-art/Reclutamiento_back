@@ -121,6 +121,11 @@ class Postulacion extends Model implements HasMedia
         return $this->hasMany(Evaluacion::class, 'postulacion_id');
     }
 
+    public function entrevistas(): HasMany
+    {
+        return $this->hasMany(Entrevista::class, 'postulacion_id');
+    }
+
     public const ESTADO_INICIAL = 1;
 
     protected $table = 'reclutamiento.postulaciones';
