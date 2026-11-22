@@ -43,6 +43,7 @@
         public const OFERTA = 4;
         public const CONTRATADO = 5;
         public const DESCARTADA = 6;
+        public const RECHAZO_OFERTA = 7;
 
         protected $table = 'reclutamiento.postulacion_estado';
 

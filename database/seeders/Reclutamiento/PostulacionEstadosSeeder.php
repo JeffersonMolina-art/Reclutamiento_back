@@ -34,6 +34,7 @@
                 ['oferta', 'Oferta', 'en_proceso'],
                 ['contratado', 'Contratado', 'finalizadas'],
                 ['descartada', 'Descartada', 'finalizadas'],
+                ['rechazo_oferta', 'Rechazo de oferta', 'finalizadas'],
             ];
 
             foreach ($estados as [$codigo, $nombre, $codigoBandeja]) {

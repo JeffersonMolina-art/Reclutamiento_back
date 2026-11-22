@@ -29,7 +29,10 @@ class PostulacionCandidatoApiController extends AppBaseController
             $candidato = $this->candidato($request);
 
             $postulaciones = Postulacion::query()
-                ->where('estado_id', '!=', PostulacionEstado::CONTRATADO)
+                ->whereNotIn('estado_id', [
+                    PostulacionEstado::CONTRATADO,
+                    PostulacionEstado::RECHAZO_OFERTA,
+                ])
                 ->where('candidato_id', $candidato->id)
                 ->with(['vacante:id,nombre,puesto_id,sede_id,modalidad_trabajo', 'vacante.puesto:id,nombre', 'vacante.sede:id,nombre', 'estado:id,nombre,codigo', 'entrevistas'])
                 ->orderByDesc('fecha_postulacion')
@@ -238,6 +241,11 @@ class PostulacionCandidatoApiController extends AppBaseController
                 $postulacion->moverA(
                     PostulacionEstado::findOrFail(PostulacionEstado::CONTRATADO),
                     'El candidato aceptó la oferta.'
+                );
+            }else{
+                $postulacion->moverA(
+                    PostulacionEstado::findOrFail(PostulacionEstado::RECHAZO_OFERTA),
+                    'El candidato rechazó la oferta.'
                 );
             }
 

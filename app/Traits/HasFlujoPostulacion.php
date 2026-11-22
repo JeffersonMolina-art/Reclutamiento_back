@@ -20,7 +20,7 @@
                 PostulacionEstado::RECIBIDA => [PostulacionEstado::EN_REVISION, PostulacionEstado::DESCARTADA],
                 PostulacionEstado::EN_REVISION => [PostulacionEstado::RECIBIDA, PostulacionEstado::ENTREVISTA, PostulacionEstado::DESCARTADA],
                 PostulacionEstado::ENTREVISTA => [PostulacionEstado::EN_REVISION, PostulacionEstado::OFERTA, PostulacionEstado::DESCARTADA],
-                PostulacionEstado::OFERTA => [PostulacionEstado::CONTRATADO, PostulacionEstado::DESCARTADA],
+                PostulacionEstado::OFERTA => [PostulacionEstado::CONTRATADO, PostulacionEstado::DESCARTADA, PostulacionEstado::RECHAZO_OFERTA],
                 PostulacionEstado::CONTRATADO => [],
                 PostulacionEstado::DESCARTADA => [],
             ];
