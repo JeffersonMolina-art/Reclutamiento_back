@@ -12,6 +12,7 @@
         Route::get('candidatos', [CandidatoApiController::class, 'index'])->name('candidatos.index');
         Route::get('candidatos/{candidato}/postulaciones', [CandidatoApiController::class, 'historial'])->name('candidatos.historial');
         Route::post('candidatos', [CandidatoApiController::class, 'store'])->name('candidatos.store');
+        Route::post('candidatos/{candidato}/cv', [CandidatoApiController::class, 'subirCv'])->name('candidatos.cv');
         Route::get('postulaciones/historial', [PostulacionApiController::class, 'historial'])->name('postulaciones.historial');
         Route::post('postulaciones/{postulacion}/asignar', [PostulacionApiController::class, 'asignar'])->name('postulaciones.asignar');
         Route::post('postulaciones/{postulacion}/comentarios', [PostulacionApiController::class, 'comentar'])->name('postulaciones.comentar');

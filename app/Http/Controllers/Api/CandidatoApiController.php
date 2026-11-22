@@ -22,8 +22,28 @@ class CandidatoApiController extends AppBaseController implements HasMiddleware
         return [
             new Middleware('abilities:ver candidatos', only: ['index']),
             new Middleware('abilities:historial candidatos', only: ['historial']),
-            new Middleware('abilities:crear candidatos', only: ['store']),
+            new Middleware('abilities:crear candidatos', only: ['store', 'subirCv']),
         ];
+    }
+
+    public function subirCv(Request $request, Candidato $candidato): JsonResponse
+    {
+        $request->validate([
+            'cv' => ['required', 'file', 'max:5120', 'mimes:pdf,doc,docx'],
+        ], [
+            'cv.required' => 'Adjunta el currículum del candidato.',
+            'cv.mimes' => 'El CV debe ser un archivo PDF, DOC o DOCX.',
+            'cv.max' => 'El CV no debe pesar más de 5 MB.',
+        ]);
+
+        return $this->executeTransaction(function () use ($request, $candidato) {
+            $candidato->addMediaFromRequest('cv')
+                ->usingFileName(bin2hex(random_bytes(16)).'.'.$request->file('cv')->getClientOriginalExtension())
+                ->usingName('CV')
+                ->toMediaCollection(Candidato::COLECCION_CV);
+
+            return $this->sendResponse(['id' => $candidato->id], 'CV cargado correctamente.');
+        });
     }
 
     public function index(Request $request): JsonResponse
