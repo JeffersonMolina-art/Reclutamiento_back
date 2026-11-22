@@ -73,6 +73,27 @@ class OpcionesFlujosTableSeeder extends Seeder
                 'parent_id' => null,
                 'orden' => MenuOpcion::max('orden') + 1,
             ]);
+        MenuOpcion::updateOrCreate(
+            ['titulo_seccion' => 'Reportes', 'ruta' => null],
+            [
+                'titulo' => null,
+                'icono' => null,
+                'action' => 'reportes postulaciones',
+                'subject' => 'Postulacion',
+                'parent_id' => null,
+                'orden' => MenuOpcion::max('orden') + 1,
+            ]);
+        MenuOpcion::updateOrCreate(
+            ['titulo' => 'Reporte de postulaciones'],
+            [
+                'ruta' => 'reportes',
+                'icono' => 'tabler-file-analytics',
+                'action' => 'reportes postulaciones',
+                'subject' => 'Postulacion',
+                'titulo_seccion' => null,
+                'parent_id' => null,
+                'orden' => MenuOpcion::max('orden') + 1,
+            ]);
 // CANDIDATOS
         MenuOpcion::updateOrCreate(
             ['titulo_seccion' => 'Candidatos', 'ruta' => null],

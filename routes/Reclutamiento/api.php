@@ -4,6 +4,7 @@
     use App\Http\Controllers\Api\EntrevistaApiController;
     use App\Http\Controllers\Api\OfertaApiController;
     use App\Http\Controllers\Api\PostulacionApiController;
+    use App\Http\Controllers\Api\ReportePostulacionApiController;
     use App\Http\Controllers\Api\VacanteApiController;
     use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,7 @@
         Route::post('postulaciones/{postulacion}/archivos', [PostulacionApiController::class, 'subirArchivo'])->name('postulaciones.archivos.subir');
         Route::get('postulaciones/{postulacion}/archivos/{media}', [PostulacionApiController::class, 'descargarArchivo'])->name('postulaciones.archivos.descargar');
         Route::delete('postulaciones/{postulacion}/archivos/{media}', [PostulacionApiController::class, 'eliminarArchivo'])->name('postulaciones.archivos.eliminar');
+        Route::get('reportes/postulaciones-por-estado', [ReportePostulacionApiController::class, 'postulacionesPorEstado'])->name('reportes.postulaciones-por-estado');
         Route::apiResource('vacantes', VacanteApiController::class)->parameters(['vacantes' => 'vacante']);
         Route::apiResource('postulaciones', PostulacionApiController::class)->only(['index', 'store', 'show', 'update'])
             ->parameters(['postulaciones' => 'postulacion']);

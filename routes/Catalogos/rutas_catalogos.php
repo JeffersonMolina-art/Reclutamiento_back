@@ -1,9 +1,9 @@
 <?php
 
     use App\Http\Controllers\Api\BandejaApiController;
-    use App\Http\Controllers\Api\Catalogos\GerenciaApiController;
     use App\Http\Controllers\Api\DepartamentoApiController;
     use App\Http\Controllers\Api\EntrevistaEstadoApiController;
+    use App\Http\Controllers\Api\GerenciaApiController;
     use App\Http\Controllers\Api\MunicipioApiController;
     use App\Http\Controllers\Api\PaisApiController;
     use App\Http\Controllers\Api\PermisoApiController;
