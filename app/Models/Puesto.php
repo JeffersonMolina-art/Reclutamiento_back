@@ -37,7 +37,8 @@
         use SoftDeletes;
         use HasFactory;
 
-        public const RECLUTADOR = 'Reclutador de Personal';
+        public const RECLUTADOR = 5;
+        public const ANALISTA = 1;
 
         protected $table = 'reclutamiento.puestos';
 

@@ -12,6 +12,9 @@ class Role extends SpatieRole
     const ALL_EMPLEADOS = "All Empleados";
     const ALL_EMPLEADOS_ID = 34;
 
+    const RECLUTADOR = 'Reclutador';
+    const ANALISTA = 'Analista de Reclutamiento';
+
     const ADMIN = "Admin";
     const ADMIN_ID = 78;
 

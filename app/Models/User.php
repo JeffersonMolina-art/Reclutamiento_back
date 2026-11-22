@@ -163,7 +163,12 @@ class User extends Authenticatable implements HasMedia
     public function scopeReclutadores($query)
     {
         return $query->where('estado', 'Activo')
-            ->whereHas('puesto', fn($puesto) => $puesto->where('nombre', Puesto::RECLUTADOR));
+            ->whereHas('roles', fn($rol) => $rol->where('name', Role::RECLUTADOR));
+    }
+    public function scopeAnalista($query)
+    {
+        return $query->where('estado', 'Activo')
+            ->whereHas('roles', fn($rol) => $rol->where('name', Role::ANALISTA));
     }
 
     protected function getArrayableAppends(): array

@@ -102,7 +102,7 @@
 
         public function postulacione()
         {
-            return $this->belongsTo(Postulacione::class, 'postulacion_id', 'id');
+            return $this->belongsTo(Postulacion::class, 'postulacion_id', 'id');
         }
 
         public function user()
