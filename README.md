@@ -38,13 +38,8 @@ Para configurar la aplicación Laravel, sigue estos pasos:
       DB_PASSWORD=tu_contraseña
       ```
 
-5. **Ejecutar las migraciones**
+5. **Ejecutar las migraciones y seeder**
    ```bash
-   php artisan migrate
-   ```
+   php artisan migrate --seed
 
-6. **Ejecutar los Seeders**
-   ```bash
-   php artisan db:seed --class=UsersTableSeeder
-   ```
 
