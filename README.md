@@ -38,7 +38,18 @@ Para configurar la aplicación Laravel, sigue estos pasos:
       DB_PASSWORD=tu_contraseña
       ```
 
-5. **Ejecutar las migraciones y seeder**
+5. **Crear la base de datos y el schema**
+    - Si aún no cuentas con la base de datos ni el schema, debes crearlos antes de migrar (el schema debe llamarse `reclutamiento`):
+      ```sql
+      CREATE DATABASE nombre_de_tu_base_de_datos;
+      GO
+      USE nombre_de_tu_base_de_datos;
+      GO
+      CREATE SCHEMA reclutamiento;
+      GO
+      ```
+
+6. **Ejecutar las migraciones y seeder**
    ```bash
    php artisan migrate --seed
 
