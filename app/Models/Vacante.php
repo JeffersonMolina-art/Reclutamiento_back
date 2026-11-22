@@ -19,6 +19,7 @@ class Vacante extends Model
         'estado_id' => 'Estado',
         'puesto_id' => 'Puesto',
         'sede_id' => 'Sede',
+        'unidad_id' => 'Unidad',
         'nombre' => 'Nombre',
         'descripcion' => 'Descripción',
         'cantidad_plazas' => 'Cantidad de plazas',
@@ -36,6 +37,7 @@ class Vacante extends Model
         'estado_id',
         'puesto_id',
         'sede_id',
+        'unidad_id',
         'nombre',
         'descripcion',
         'cantidad_plazas',
@@ -51,6 +53,7 @@ class Vacante extends Model
         'id' => 'integer',
         'estado_id' => 'integer',
         'puesto_id' => 'integer',
+        'unidad_id' => 'integer',
         'sede_id' => 'integer',
         'user_id' => 'integer',
         'user_encargado' => 'integer',
@@ -65,6 +68,7 @@ class Vacante extends Model
         'puesto_nombre',
         'sede_nombre',
         'encargado_nombre',
+        'unidad_nombre',
         'rango_salarial',
     ];
 
@@ -94,6 +98,10 @@ class Vacante extends Model
     public function puesto(): BelongsTo
     {
         return $this->belongsTo(Puesto::class, 'puesto_id');
+    }
+    public function unidad(): BelongsTo
+    {
+        return $this->belongsTo(Unidad::class, 'unidad_id');
     }
 
     public function sede(): BelongsTo
@@ -134,6 +142,11 @@ class Vacante extends Model
     public function getEncargadoNombreAttribute(): ?string
     {
         return $this->encargado?->nombre_completo;
+    }
+
+    public function getUnidadNombreAttribute(): ?string
+    {
+        return $this->unidad?->nombre;
     }
 
     public function getRangoSalarialAttribute(): ?string

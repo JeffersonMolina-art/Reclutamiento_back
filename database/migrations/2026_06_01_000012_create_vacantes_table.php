@@ -12,6 +12,7 @@ return new class extends Migration
             $table->integer('id', true);
             $table->integer('estado_id')->index();
             $table->foreignId('puesto_id')->index()->constrained('reclutamiento.puestos');
+            $table->foreignId('unidad_id')->index()->constrained('reclutamiento.unidads');
             $table->integer('sede_id')->index();
             $table->string('nombre', 45);
             $table->text('descripcion');

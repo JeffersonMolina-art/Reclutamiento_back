@@ -21,6 +21,10 @@
                 'Analista de Compensación y Beneficios',
                 'Coordinador de Capacitación',
                 'Analista de Desarrollo Organizacional',
+                'Desarrollador de Software',
+                'Técnico de Soporte',
+                'Contador General',
+                'Analista de Créditos',
             ];
 
             foreach ($puestos as $nombre) {

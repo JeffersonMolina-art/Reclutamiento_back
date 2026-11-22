@@ -95,7 +95,7 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
 
             $comentario = implode("\n", [
                 "Se creó la vacante «{$vacante->nombre}».",
-                "Puesto: {$vacante->puesto?->nombre} · Sede: {$vacante->sede?->nombre}",
+                "Puesto: {$vacante->puesto?->nombre} · Sede: {$vacante->sede?->nombre} · Unidad: {$vacante->unidad?->nombre}",
                 "Modalidad: {$vacante->modalidad_trabajo} · Plazas: {$vacante->cantidad_plazas}",
                 'Estado inicial: ' . ($vacante->estado?->nombre ?? 'Sin definir'),
                 'Encargado: ' . ($vacante->encargado?->nombre_completo ?? 'Sin asignar'),
@@ -111,7 +111,7 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
             );
 
             return $this->sendResponse(
-                $vacante->load('estado', 'puesto', 'sede', 'requisitos', 'caracteristicas')->toArray(),
+                $vacante->load('estado', 'puesto', 'sede', 'unidad', 'requisitos', 'caracteristicas')->toArray(),
                 'Vacante creada con éxito.'
             );
         });
@@ -124,7 +124,7 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
     public function show(Vacante $vacante): JsonResponse
     {
         return $this->executeOperation(function () use ($vacante) {
-            $vacante->load('estado', 'puesto', 'sede', 'requisitos', 'caracteristicas', 'bitacoras');
+            $vacante->load('estado', 'puesto', 'sede', 'unidad', 'requisitos', 'caracteristicas', 'bitacoras');
 
             return $this->sendResponse($vacante->toArray(), 'Vacante recuperada con éxito.');
         });
@@ -213,7 +213,7 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
             );
 
             return $this->sendResponse(
-                $vacante->load('estado', 'puesto', 'sede', 'requisitos', 'caracteristicas')->toArray(),
+                $vacante->load('estado', 'puesto', 'sede', 'unidad', 'requisitos', 'caracteristicas')->toArray(),
                 'Vacante actualizada con éxito.'
             );
         });
