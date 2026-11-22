@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Publico;
 
 use App\Http\Controllers\AppBaseController;
 use App\Models\Candidato;
+use App\Models\EntrevistaEstado;
 use App\Models\Postulacion;
 use App\Models\PostulacionEstado;
 use App\Models\Postulacionresultado;
@@ -30,7 +31,7 @@ class PostulacionCandidatoApiController extends AppBaseController
             $postulaciones = Postulacion::query()
                 ->where('estado_id', '!=', PostulacionEstado::CONTRATADO)
                 ->where('candidato_id', $candidato->id)
-                ->with(['vacante:id,nombre,puesto_id,sede_id,modalidad_trabajo', 'vacante.puesto:id,nombre', 'vacante.sede:id,nombre', 'estado:id,nombre,codigo'])
+                ->with(['vacante:id,nombre,puesto_id,sede_id,modalidad_trabajo', 'vacante.puesto:id,nombre', 'vacante.sede:id,nombre', 'estado:id,nombre,codigo', 'entrevistas'])
                 ->orderByDesc('fecha_postulacion')
                 ->orderByDesc('id')
                 ->get()
@@ -44,6 +45,7 @@ class PostulacionCandidatoApiController extends AppBaseController
                     'estado' => $p->estado?->nombre,
                     'estado_codigo' => $p->estado?->codigo,
                     'fecha_postulacion' => $p->fecha_postulacion?->toDateString(),
+                    'entrevista' => $this->entrevistaAgendada($p),
                 ])
                 ->values();
 
@@ -89,9 +91,33 @@ class PostulacionCandidatoApiController extends AppBaseController
                     'estado_codigo' => $registro->estado?->codigo,
                     'porcentaje' => $historial->last()['porcentaje'] ?? 0,
                     'historial' => $historial,
+                    'entrevista' => $this->entrevistaAgendada($registro),
                 ],
             ]);
         });
+    }
+
+    private function entrevistaAgendada(Postulacion $postulacion): ?array
+    {
+        if ($postulacion->estado_id !== PostulacionEstado::ENTREVISTA) {
+            return null;
+        }
+
+        $entrevista = $postulacion->entrevistas
+            ->whereIn('estado_id', [EntrevistaEstado::PROGRAMADA, EntrevistaEstado::CONFIRMADA, EntrevistaEstado::REPROGRAMADA])
+            ->sortByDesc('fecha_hora_programada')
+            ->first();
+        if (! $entrevista) {
+            return null;
+        }
+
+        $virtual = $entrevista->modalidad === 'virtual';
+
+        return [
+            'fecha_hora' => $entrevista->fecha_hora_programada?->toIso8601String(),
+            'modalidad' => $entrevista->modalidad,
+            $virtual ? 'url' : 'ubicacion' => $entrevista->ubicacion_o_enlace,
+        ];
     }
 
     public function store(Request $request): JsonResponse
