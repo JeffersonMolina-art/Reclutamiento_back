@@ -71,6 +71,7 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
             'unidad_id' => ['required', 'integer'],
             'user_encargado' => ['nullable', 'integer'],
             'nombre' => ['required', 'string', 'max:45'],
+            'fecha_publicacion' => ['nullable', 'date'],
             'descripcion' => ['required', 'string', 'max:255'],
             'cantidad_plazas' => ['required', 'integer', 'min:1'],
             'modalidad_trabajo' => ['required', Rule::in(['presencial', 'remoto', 'hibrido'])],

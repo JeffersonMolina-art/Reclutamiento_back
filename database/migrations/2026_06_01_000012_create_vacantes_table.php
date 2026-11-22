@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('puesto_id')->index()->constrained('reclutamiento.puestos');
             $table->foreignId('unidad_id')->index()->constrained('reclutamiento.unidads');
             $table->integer('sede_id')->index();
-            $table->string('nombre', 45);
+            $table->string('nombre', 255);
             $table->text('descripcion');
             $table->integer('cantidad_plazas');
             $table->foreignId('user_id')->index()->constrained('reclutamiento.users');

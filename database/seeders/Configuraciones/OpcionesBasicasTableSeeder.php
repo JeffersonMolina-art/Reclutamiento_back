@@ -131,31 +131,11 @@ class OpcionesBasicasTableSeeder extends Seeder
                 'orden' =>  MenuOpcion::max('orden') + 1,
             ]);
         MenuOpcion::updateOrCreate(
-            ['titulo' => 'Ejemplos', 'parent_id' => $menuOpciones['Dev']->id,],
-            [
-                'ruta' => 'dev-ejemplos',
-                'icono' => 'tabler-tools',
-                'action' => 'listar ejemplos',
-                'subject' => 'dev',
-                'titulo_seccion' => null,
-                'orden' =>  MenuOpcion::max('orden') + 1,
-            ]);
-        MenuOpcion::updateOrCreate(
             ['titulo' => 'Logs', 'parent_id' => $menuOpciones['Dev']->id,],
             [
                 'ruta' => 'dev-log',
                 'icono' => 'tabler-file-text',
                 'action' => 'listar logs',
-                'subject' => 'dev',
-                'titulo_seccion' => null,
-                'orden' =>  MenuOpcion::max('orden') + 1,
-            ]);
-        MenuOpcion::updateOrCreate(
-            ['titulo' => 'Prueba Apis', 'parent_id' => $menuOpciones['Dev']->id,],
-            [
-                'ruta' => 'dev-pruebaApis',
-                'icono' => 'tabler-api',
-                'action' => 'listar prueba Apis',
                 'subject' => 'dev',
                 'titulo_seccion' => null,
                 'orden' =>  MenuOpcion::max('orden') + 1,
