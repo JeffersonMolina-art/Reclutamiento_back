@@ -147,6 +147,8 @@ class Postulacion extends Model implements HasMedia
     }
     public function scopeVisiblesPara(Builder $query, User $usuario): Builder
     {
+        $query->where('estado_id', '!=', PostulacionEstado::DESCARTADA);
+
         if ($usuario->hasAnyRole(Role::ROLES_ADMINISTRATIVOS)) {
             return $query;
         }
