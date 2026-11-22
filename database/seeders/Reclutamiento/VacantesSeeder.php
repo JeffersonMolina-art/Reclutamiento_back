@@ -18,7 +18,7 @@ class VacantesSeeder extends Seeder
      */
     public function run(): void
     {
-        $userId = User::where('usuario_dominio', 'gyreclutador1')->value('id');
+        $userId = User::where('usuario_dominio', 'gymadruano')->value('id');
         $estadoPublicada = VacanteEstado::where('codigo', 'publicada')->value('id');
         $sedeJalapa = Sede::where('nombre', 'Agencia Jalapa')->value('id');
         $sedeGuastatoya = Sede::where('nombre', 'Agencia Guastatoya')->value('id');
