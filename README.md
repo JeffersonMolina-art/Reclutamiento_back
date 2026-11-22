@@ -22,8 +22,12 @@ Para configurar la aplicación Laravel, sigue estos pasos:
    ```bash
    php artisan key:generate
    ```
+3. **Crear el enlace simbólico para el almacenamiento**
+   ```bash
+   php artisan storage:link
+   ```
 
-3. **Configurar la conexión a la base de datos**
+4. **Configurar la conexión a la base de datos**
     - Actualiza tu archivo `.env` con las credenciales de tu base de datos:
       ```
       DB_CONNECTION=sqlsrv
@@ -34,12 +38,12 @@ Para configurar la aplicación Laravel, sigue estos pasos:
       DB_PASSWORD=tu_contraseña
       ```
 
-4. **Ejecutar las migraciones**
+5. **Ejecutar las migraciones**
    ```bash
    php artisan migrate
    ```
 
-5. **Ejecutar los Seeders**
+6. **Ejecutar los Seeders**
    ```bash
    php artisan db:seed --class=UsersTableSeeder
    ```

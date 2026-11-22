@@ -31,6 +31,7 @@
                 ['recibida', 'Recibida', 'recibidas'],
                 ['en_revision', 'En revisión', 'en_proceso'],
                 ['entrevista', 'Entrevista', 'en_proceso'],
+                ['oferta', 'Oferta', 'en_proceso'],
                 ['contratado', 'Contratado', 'finalizadas'],
                 ['descartada', 'Descartada', 'finalizadas'],
             ];

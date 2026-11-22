@@ -20,6 +20,7 @@ class IndexTableSeeder extends Seeder
             PuestoTableSeeder::class,
             UsuariosReclutamientoSeeder::class,
             UserExternoEstadoTableSeeder::class,
+            UserExternoSeeder::class,
             VacantesEstadosSeeder::class,
             EntrevistasEstadosSeeder::class,
             PostulacionEstadosSeeder::class,

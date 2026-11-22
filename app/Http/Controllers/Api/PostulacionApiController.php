@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\AppBaseController;
+use App\Http\Resources\PostulacionDetalleResource;
 use App\Models\Postulacion;
 use App\Models\PostulacionEstado;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Validation\Rule;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -17,8 +19,8 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
     public static function middleware(): array
     {
         return [
-            new Middleware('abilities:ver postulaciones', only: ['index', 'show', 'cv']),
-            new Middleware('abilities:editar postulaciones', only: ['update', 'comentar']),
+            new Middleware('abilities:ver postulaciones', only: ['index', 'show', 'cv', 'listarArchivos', 'descargarArchivo']),
+            new Middleware('abilities:editar postulaciones', only: ['update', 'comentar', 'subirArchivo', 'eliminarArchivo']),
             new Middleware('abilities:asignar postulaciones', only: ['asignar']),
         ];
     }
@@ -69,38 +71,121 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
             $detalle = Postulacion::query()
                 ->visiblesPara($request->user())
                 ->with([
-                    'vacante',
+                    'vacante.puesto',
+                    'vacante.sede',
+                    'vacante.requisitos',
                     'candidato.conocimientos',
                     'candidato.experiencias',
                     'candidato.formaciones',
-                    'estado.bandeja',
-                    'asignacion',
-                    'seguimientos',
-                    'bitacoras',
+                    'estado',
                 ])
                 ->findOrFail($postulacion->getKey());
 
-            $datos = $detalle->toArray();
             $cv = $detalle->candidato?->cvActual();
+
+            $datos = (new PostulacionDetalleResource($detalle))->resolve();
+
+            $datos['estados_disponibles'] = PostulacionEstado::query()
+                ->whereIn('codigo', $detalle->estadosDisponibles())
+                ->get(['id', 'codigo', 'nombre'])
+                ->toArray();
 
             $datos['cv'] = $cv ? [
                 'tiene_cv' => true,
                 'extension' => pathinfo($cv->file_name, PATHINFO_EXTENSION),
-                'tamano' => $cv->size,
-                'subido_el' => $cv->created_at?->toIso8601String(),
             ] : ['tiene_cv' => false];
 
+            return $this->sendResponse($datos, 'Postulación recuperada con éxito.');
+        });
+    }
+    public function subirArchivo(Request $request, Postulacion $postulacion): JsonResponse
+    {
+        $validados = $request->validate([
+            'coleccion' => ['required', 'string', Rule::in(Postulacion::COLECCIONES_EXAMENES)],
+            'archivo' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png,doc,docx'],
+            'puntuacion' => ['required', 'numeric', 'min:0'],
+            'modalidad' => ['required', 'string', 'max:45'],
+            'comentarios' => ['nullable', 'string', 'max:255'],
+            'entrevistador_id' => ['nullable', 'integer'],
+        ], [
+            'archivo.mimes' => 'El archivo debe ser PDF, imagen, DOC o DOCX.',
+            'archivo.max' => 'El archivo no debe pesar más de 10 MB.',
+        ]);
+
+        return $this->executeTransaction(function () use ($request, $postulacion, $validados) {
+            $usuario = $request->user();
+
+            $postulacion = Postulacion::query()
+                ->visiblesPara($usuario)
+                ->findOrFail($postulacion->getKey());
+
+            $evaluacion = $postulacion->evaluaciones()->create([
+                'entrevistador_id' => $validados['entrevistador_id'] ?? $usuario->id,
+                'puntuacion' => $validados['puntuacion'],
+                'modalidad' => $validados['modalidad'],
+                'fecha_evaluacion' => now(),
+                'comentarios' => $validados['comentarios'] ?? null,
+                'users_id' => $usuario->id,
+                'postulacion_estado_id' => $postulacion->estado_id,
+            ]);
+
+            $postulacion->guardarArchivo($request->file('archivo'), $validados['coleccion'], $usuario, $evaluacion);
+
             return $this->sendResponse(
-                $datos,
-                'Postulación recuperada con éxito.'
+                $postulacion->fresh()->archivos($validados['coleccion']),
+                'Archivo cargado correctamente.'
             );
         });
     }
 
+    public function listarArchivos(Request $request, Postulacion $postulacion): JsonResponse
+    {
+        $validados = $request->validate([
+            'coleccion' => ['nullable', 'string', Rule::in(Postulacion::COLECCIONES_EXAMENES)],
+        ]);
+
+        return $this->executeOperation(function () use ($request, $postulacion, $validados) {
+            $postulacion = Postulacion::query()
+                ->visiblesPara($request->user())
+                ->findOrFail($postulacion->getKey());
+
+            return $this->sendResponse(
+                $postulacion->archivos($validados['coleccion'] ?? null),
+                'Archivos recuperados con éxito.'
+            );
+        });
+    }
+
+
+    public function eliminarArchivo(Request $request, Postulacion $postulacion, int $media): JsonResponse
+    {
+        return $this->executeTransaction(function () use ($request, $postulacion, $media) {
+            $postulacion = Postulacion::query()
+                ->visiblesPara($request->user())
+                ->findOrFail($postulacion->getKey());
+
+            $archivo = $postulacion->media()->findOrFail($media);
+
+            $postulacion->evaluaciones()->whereKey($archivo->getCustomProperty('evaluacion_id'))->delete();
+            $archivo->delete();
+
+            return $this->sendResponse([], 'Archivo eliminado correctamente.');
+        });
+    }
+
     /**
-     * Descarga el CV del candidato de la postulación.
-     * GET /reclutamiento/postulaciones/{postulacion}/cv
+     * Descarga un archivo de la postulación.
+     * GET /reclutamiento/postulaciones/{postulacion}/archivos/{media}
      */
+    public function descargarArchivo(Request $request, Postulacion $postulacion, int $media)
+    {
+        $postulacion = Postulacion::query()
+            ->visiblesPara($request->user())
+            ->findOrFail($postulacion->getKey());
+
+        return $postulacion->media()->findOrFail($media)->toResponse($request);
+    }
+
     public function cv(Request $request, Postulacion $postulacion)
     {
         $postulacion = Postulacion::query()
@@ -126,7 +211,6 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
         $validados = $request->validate([
             'estado_id' => ['required', 'integer'],
             'comentario' => ['required', 'string', 'max:255'],
-            'porcentaje' => ['nullable', 'numeric', 'between:0,100'],
             'puntaje_fase' => ['nullable', 'numeric'],
         ]);
 
@@ -139,7 +223,6 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
                 PostulacionEstado::findOrFail($validados['estado_id']),
                 $validados['comentario'],
                 $request->user()->id,
-                $validados['porcentaje'] ?? null,
                 $validados['puntaje_fase'] ?? null
             );
 
