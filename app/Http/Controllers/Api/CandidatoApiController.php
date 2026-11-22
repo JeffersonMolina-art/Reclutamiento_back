@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\AppBaseController;
 use App\Models\Candidato;
+use App\Models\Postulacion;
 use App\Models\UserExterno;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -17,14 +20,108 @@ class CandidatoApiController extends AppBaseController implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('abilities:crear postulaciones', only: ['store']),
+            new Middleware('abilities:ver candidatos', only: ['index']),
+            new Middleware('abilities:historial candidatos', only: ['historial']),
+            new Middleware('abilities:crear candidatos', only: ['store']),
         ];
     }
 
-    /**
-     * Crea un candidato junto con su usuario del portal.
-     * POST /reclutamiento/candidatos
-     */
+    public function index(Request $request): JsonResponse
+    {
+        return $this->executeOperation(function () use ($request) {
+            $consulta = Candidato::query()
+                ->withCount('postulaciones')
+                ->with(['postulaciones' => fn ($q) => $q->latest('fecha_postulacion')->latest('id')
+                    ->with(['vacante:id,nombre', 'estado:id,nombre,codigo'])]);
+
+            $candidatos = QueryBuilder::for($consulta, $request)
+                ->allowedFilters(
+                    AllowedFilter::exact('id'),
+                    AllowedFilter::callback('buscar', fn ($q, $valor) => $q->where(
+                        fn ($w) => $w->where('dpi', 'like', "%{$valor}%")
+                            ->orWhere('correo_contacto', 'like', "%{$valor}%")
+                            ->orWhere('telefono_contacto', 'like', "%{$valor}%")
+                            ->orWhere('primer_nombre', 'like', "%{$valor}%")
+                            ->orWhere('segundo_nombre', 'like', "%{$valor}%")
+                            ->orWhere('primer_apellido', 'like', "%{$valor}%")
+                            ->orWhere('segundo_apellido', 'like', "%{$valor}%")
+                    )),
+                    AllowedFilter::callback('vacante_id', fn ($q, $valor) => $q->whereHas(
+                        'postulaciones', fn ($p) => $p->where('vacante_id', $valor)
+                    )),
+                )
+                ->allowedSorts('id', 'primer_nombre', 'primer_apellido', 'created_at')
+                ->defaultSort('-id')
+                ->jsonPaginate($request->input('page.size') ?? 10)
+                ->through(fn (Candidato $c) => [
+                    'id' => $c->id,
+                    'nombre_completo' => $c->nombre_completo,
+                    'dpi' => $c->dpi,
+                    'correo' => $c->correo_contacto,
+                    'telefono' => $c->telefono_contacto,
+                    'expectativa_salarial' => $c->expectativa_salarial,
+                    'total_postulaciones' => $c->postulaciones_count,
+                    'postulaciones' => $c->postulaciones->map(fn ($p) => [
+                        'id' => $p->id,
+                        'vacante_id' => $p->vacante_id,
+                        'vacante' => $p->vacante?->nombre,
+                        'estado' => $p->estado?->nombre,
+                        'estado_codigo' => $p->estado?->codigo,
+                        'fecha_postulacion' => $p->fecha_postulacion?->toDateString(),
+                    ])->values(),
+                ]);
+
+            return $this->sendResponse($candidatos->toArray(), 'Candidatos recuperados con éxito.');
+        });
+    }
+    public function historial(Candidato $candidato): JsonResponse
+    {
+        return $this->executeOperation(function () use ($candidato) {
+            $postulaciones = $candidato->postulaciones()
+                ->with([
+                    'vacante:id,nombre,puesto_id,sede_id',
+                    'vacante.puesto:id,nombre',
+                    'vacante.sede:id,nombre',
+                    'estado:id,nombre,codigo',
+                    'seguimientos' => fn ($q) => $q->orderBy('fecha_cambio')->orderBy('id'),
+                    'seguimientos.estadoActual:id,nombre,codigo',
+                    'seguimientos.user',
+                ])
+                ->latest('fecha_postulacion')
+                ->latest('id')
+                ->get()
+                ->map(fn (Postulacion $p) => [
+                    'id' => $p->id,
+                    'vacante' => $p->vacante?->nombre,
+                    'puesto' => $p->vacante?->puesto?->nombre,
+                    'sede' => $p->vacante?->sede?->nombre,
+                    'estado' => $p->estado?->nombre,
+                    'estado_codigo' => $p->estado?->codigo,
+                    'fecha_postulacion' => $p->fecha_postulacion?->toDateString(),
+                    'porcentaje' => $p->seguimientos->last()?->porcentaje ?? 0,
+                    'seguimiento' => $p->seguimientos->map(fn ($s) => [
+                        'estado' => $s->estadoActual?->nombre,
+                        'estado_codigo' => $s->estadoActual?->codigo,
+                        'porcentaje' => $s->porcentaje,
+                        'comentario' => $s->comentario,
+                        'usuario' => $s->user?->nombre_completo,
+                        'fecha' => $s->fecha_cambio?->toIso8601String(),
+                    ])->values(),
+                ])
+                ->values();
+
+            return $this->sendResponse([
+                'candidato' => [
+                    'id' => $candidato->id,
+                    'nombre_completo' => $candidato->nombre_completo,
+                    'dpi' => $candidato->dpi,
+                    'correo' => $candidato->correo_contacto,
+                    'telefono' => $candidato->telefono_contacto,
+                ],
+                'postulaciones' => $postulaciones,
+            ], 'Historial recuperado con éxito.');
+        });
+    }
     public function store(Request $request): JsonResponse
     {
         $request->merge([

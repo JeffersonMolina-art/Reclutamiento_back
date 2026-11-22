@@ -46,6 +46,22 @@ class Candidato extends Model implements HasMedia
             ]);
     }
 
+    public function postulaciones(): HasMany
+    {
+        return $this->hasMany(Postulacion::class, 'candidato_id');
+    }
+
+    public function getNombreCompletoAttribute(): string
+    {
+        return collect([
+            $this->primer_nombre,
+            $this->segundo_nombre,
+            $this->tercer_nombre,
+            $this->primer_apellido,
+            $this->segundo_apellido,
+        ])->filter()->implode(' ');
+    }
+
     public function conocimientos(): HasMany
     {
         return $this->hasMany(CandidatoConocimiento::class, 'candidato_id');
