@@ -70,6 +70,7 @@ class UsuariosReclutamientoPermisosTableSeeder extends Seeder
             'historial candidatos',
             'seccion candidatos',
             'historial candidatos postulaciones',
+            'reportes postulaciones',
         ];
 
         $rolJefeRRHH->givePermissionTo($permisosJefeRRHH);
