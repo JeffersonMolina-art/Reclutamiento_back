@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class PostulacionCandidatoApiController extends AppBaseController
 {
@@ -188,6 +189,16 @@ class PostulacionCandidatoApiController extends AppBaseController
             ]);
 
             if ($aceptada) {
+                // DESCONTAR PLAZA DE LA VACANTE
+                $plazasActualizadas = $postulacion->vacante()
+                    ->where('cantidad_plazas', '>', 0)
+                    ->decrement('cantidad_plazas');
+
+                if ($plazasActualizadas === 0) {
+                    throw ValidationException::withMessages([
+                        'oferta' => 'La vacante ya no tiene plazas disponibles.',
+                    ]);
+                }
                 $postulacion->moverA(
                     PostulacionEstado::findOrFail(PostulacionEstado::CONTRATADO),
                     'El candidato aceptó la oferta.'
