@@ -140,8 +140,28 @@ class CandidatoApiController extends AppBaseController implements HasMiddleware
             'email' => ['required', 'string', 'email:rfc', 'max:100'],
             'telefono' => ['required', 'regex:/^\+?[0-9]{8,11}$/'],
             'fecha_nacimiento' => ['required', 'date_format:Y-m-d', 'after:1900-01-01', 'before_or_equal:'.now()->subYears(18)->toDateString()],
-            'expectativa_salarial' => ['nullable', 'numeric', 'min:0', 'max:99999999'],
+            'expectativa_salarial' => ['required', 'numeric', 'gt:0', 'max:99999999'],
+            'conocimientos' => ['required', 'array', 'min:1', 'max:50'],
+            'conocimientos.*.descripcion' => ['required', 'string', 'max:255'],
+            'conocimientos.*.nivel' => ['nullable', 'string', 'max:45'],
+            'experiencias' => ['required', 'array', 'min:1', 'max:30'],
+            'experiencias.*.empresa' => ['required', 'string', 'max:255'],
+            'experiencias.*.puesto' => ['nullable', 'string', 'max:45'],
+            'experiencias.*.fecha_inicio' => ['required', 'date', 'after:1950-01-01', 'before_or_equal:today'],
+            'experiencias.*.fecha_fin' => ['nullable', 'date', 'before_or_equal:today'],
+            'formaciones' => ['required', 'array', 'min:1', 'max:30'],
+            'formaciones.*.nombre' => ['required', 'string', 'max:255'],
+            'formaciones.*.titulo_carrera' => ['nullable', 'string', 'max:255'],
+            'formaciones.*.fecha_inicio' => ['required', 'date', 'after:1950-01-01', 'before_or_equal:today'],
+            'formaciones.*.fecha_fin' => ['nullable', 'date', 'before_or_equal:today'],
         ], [
+            'expectativa_salarial.gt' => 'La expectativa salarial debe ser mayor a cero.',
+            'conocimientos.required' => 'Agrega al menos un conocimiento.',
+            'conocimientos.min' => 'Agrega al menos un conocimiento.',
+            'experiencias.required' => 'Agrega al menos una experiencia.',
+            'experiencias.min' => 'Agrega al menos una experiencia.',
+            'formaciones.required' => 'Agrega al menos una formación.',
+            'formaciones.min' => 'Agrega al menos una formación.',
             'dpi.digits' => 'El DPI debe tener 13 dígitos.',
             'telefono.regex' => 'El teléfono debe tener entre 8 y 11 dígitos.',
             'fecha_nacimiento.before_or_equal' => 'El candidato debe ser mayor de 18 años.',
@@ -176,8 +196,12 @@ class CandidatoApiController extends AppBaseController implements HasMiddleware
                 'correo_contacto' => $datos['email'],
                 'telefono_contacto' => $datos['telefono'],
                 'fecha_nacimiento' => $datos['fecha_nacimiento'],
-                'expectativa_salarial' => $datos['expectativa_salarial'] ?? 0,
+                'expectativa_salarial' => $datos['expectativa_salarial'],
             ]);
+
+            $candidato->conocimientos()->createMany($datos['conocimientos']);
+            $candidato->experiencias()->createMany($datos['experiencias']);
+            $candidato->formaciones()->createMany($datos['formaciones']);
 
             return $this->sendResponse([
                 ...$candidato->toArray(),

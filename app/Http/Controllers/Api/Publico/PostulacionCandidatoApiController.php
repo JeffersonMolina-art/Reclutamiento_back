@@ -110,19 +110,7 @@ class PostulacionCandidatoApiController extends AppBaseController
                 ], 422);
             }
 
-            $faltantes = [];
-
-            if ((float) $candidato->expectativa_salarial <= 0)
-                $faltantes[] = 'expectativa salarial';
-
-            if (! $candidato->conocimientos()->exists())
-                $faltantes[] = 'al menos un conocimiento';
-
-            if (! $candidato->experiencias()->exists())
-                $faltantes[] = 'al menos una experiencia';
-
-            if (! $candidato->formaciones()->exists())
-                $faltantes[] = 'al menos una formación';
+            $faltantes = $candidato->faltantesParaPostular();
 
             if ($faltantes !== []) {
                 return response()->json([

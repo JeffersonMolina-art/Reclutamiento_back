@@ -93,6 +93,32 @@ class Candidato extends Model implements HasMedia
         return $this->hasMany(CandidatoFormacion::class, 'candidato_id');
     }
 
+    /**
+     * Requisitos del perfil para poder postularse a una vacante.
+     */
+    public function faltantesParaPostular(): array
+    {
+        $faltantes = [];
+
+        if ((float) $this->expectativa_salarial <= 0) {
+            $faltantes[] = 'expectativa salarial';
+        }
+
+        if (! $this->conocimientos()->exists()) {
+            $faltantes[] = 'al menos un conocimiento';
+        }
+
+        if (! $this->experiencias()->exists()) {
+            $faltantes[] = 'al menos una experiencia';
+        }
+
+        if (! $this->formaciones()->exists()) {
+            $faltantes[] = 'al menos una formación';
+        }
+
+        return $faltantes;
+    }
+
     public function cvActual(): ?MediaModel
     {
         return $this->getFirstMedia(self::COLECCION_CV);

@@ -27,6 +27,7 @@ class UsuariosReclutamientoPermisosTableSeeder extends Seeder
             'asignar postulaciones',
             'ver usuarios',
             'ver bitacoras',
+            'ver vacantes',
             'seccion postulaciones',
         ];
 
@@ -57,7 +58,6 @@ class UsuariosReclutamientoPermisosTableSeeder extends Seeder
             'listar vacante estados',
             'seccion vacantes',
             'listar vacantes',
-            'ver vacantes',
             'crear vacantes',
             'ver sedes',
             'ver unidades',

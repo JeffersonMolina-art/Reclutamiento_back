@@ -138,8 +138,19 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
                 return response()->json(['message' => 'La vacante no está disponible.'], 422);
             }
 
-            if (! Candidato::whereKey($datos['candidato_id'])->exists()) {
+            $candidato = Candidato::find($datos['candidato_id']);
+
+            if (! $candidato) {
                 return response()->json(['message' => 'El candidato no existe.'], 422);
+            }
+
+            $faltantes = $candidato->faltantesParaPostular();
+
+            if ($faltantes !== []) {
+                return response()->json([
+                    'message' => 'El perfil del candidato está incompleto. Falta: '.implode(', ', $faltantes).'.',
+                    'faltantes' => $faltantes,
+                ], 422);
             }
 
             $yaPostulado = Postulacion::where('vacante_id', $vacante->id)
