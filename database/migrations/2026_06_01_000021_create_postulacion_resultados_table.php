@@ -10,9 +10,15 @@ return new class extends Migration
     {
         Schema::create('reclutamiento.postulacion_resultados', function (Blueprint $table) {
             $table->integer('id', true);
-            $table->string('motivo', 255);
-            $table->dateTime('fecha_decision');
+            $table->string('motivo', 255)->nullable();
+            $table->dateTime('fecha_decision')->nullable();
             $table->integer('postulacion_id')->unique();
+            $table->decimal('salario_ofrecido', 12, 2)->nullable();
+            $table->date('fecha_inicio_propuesta')->nullable();
+            $table->text('condiciones_oferta')->nullable();
+            $table->string('estado_oferta', 20)->nullable();
+            $table->dateTime('fecha_respuesta_oferta')->nullable();
+            $table->string('motivo_rechazo_oferta', 255)->nullable();;
             $table->integer('estado_id')->index();
             $table->foreignId('user_id')->index()->constrained('reclutamiento.users');
             $table->timestamps();
