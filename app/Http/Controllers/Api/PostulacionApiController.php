@@ -86,7 +86,7 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
             $datos = (new PostulacionDetalleResource($detalle))->resolve();
 
             $datos['estados_disponibles'] = PostulacionEstado::query()
-                ->whereIn('codigo', $detalle->estadosDisponibles())
+                ->whereKey($detalle->estadosDisponibles())
                 ->get(['id', 'codigo', 'nombre'])
                 ->toArray();
 

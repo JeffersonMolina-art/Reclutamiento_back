@@ -37,6 +37,13 @@
         use SoftDeletes;
         use HasFactory;
 
+        public const RECIBIDA = 1;
+        public const EN_REVISION = 2;
+        public const ENTREVISTA = 3;
+        public const OFERTA = 4;
+        public const CONTRATADO = 5;
+        public const DESCARTADA = 6;
+
         protected $table = 'reclutamiento.postulacion_estado';
 
 

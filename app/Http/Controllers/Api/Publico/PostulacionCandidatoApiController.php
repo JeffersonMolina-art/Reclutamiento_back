@@ -132,6 +132,7 @@ class PostulacionCandidatoApiController extends AppBaseController
                     $postulacion->asignacion()->create([
                         'users_id' => $vacante->user_encargado,
                         'bandeja_id' => $postulacion->estado()->value('bandeja_id'),
+                        'estado_id' => $postulacion->estado_id,
                         'nombre' => Str::limit($vacante->encargado?->nombre_completo ?? '', 45, ''),
                     ]);
                 }

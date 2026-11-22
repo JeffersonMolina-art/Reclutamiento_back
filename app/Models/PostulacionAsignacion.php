@@ -44,6 +44,7 @@
             [
                 'bandeja_id',
                 'postulacion_id',
+                'estado_id',
                 'users_id',
                 'nombre'
             ];
@@ -59,6 +60,7 @@
                 'id' => 'integer',
                 'bandeja_id' => 'integer',
                 'postulacion_id' => 'integer',
+                'estado_id' => 'integer',
                 'users_id' => 'integer',
                 'nombre' => 'string',
                 'created_at' => 'datetime',

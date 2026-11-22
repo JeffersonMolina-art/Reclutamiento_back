@@ -32,14 +32,20 @@ class Postulacion extends Model implements HasMedia
         }
     }
 
-    public function examenesMedicos(): Collection
+    public function examenesMedicos(): \Illuminate\Support\Collection
     {
-        return $this->getMedia(self::EXAMENES_MEDICOS);
+        return $this->getMedia(self::EXAMENES_MEDICOS)
+            ->sortByDesc('id')
+            ->take(1)
+            ->values();
     }
 
-    public function examenesTecnicos(): Collection
+    public function examenesTecnicos(): \Illuminate\Support\Collection
     {
-        return $this->getMedia(self::EXAMENES_TECNICOS);
+        return $this->getMedia(self::EXAMENES_TECNICOS)
+            ->sortByDesc('id')
+            ->take(1)
+            ->values();
     }
 
     public function archivos(?string $coleccion = null): array
@@ -165,7 +171,7 @@ class Postulacion extends Model implements HasMedia
 
     public function asignacion(): HasOne
     {
-        return $this->hasOne(PostulacionAsignacion::class, 'postulacion_id');
+        return $this->hasOne(PostulacionAsignacion::class, 'postulacion_id')->latestOfMany('id');
     }
 
     public function seguimientos(): HasMany

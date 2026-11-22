@@ -34,6 +34,10 @@ class Bandeja extends Model
     use SoftDeletes;
     use HasFactory;
 
+    public const RECIBIDAS = 1;
+    public const EN_PROCESO = 2;
+    public const FINALIZADAS = 3;
+
     protected $table = 'reclutamiento.bandeja';
 
 
