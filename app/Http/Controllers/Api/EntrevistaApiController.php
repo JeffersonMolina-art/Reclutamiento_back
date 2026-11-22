@@ -35,7 +35,7 @@ class EntrevistaApiController extends AppBaseController implements HasMiddleware
             'ubicacion_o_enlace' => ['required', 'string', 'max:500', Rule::when($esVirtual, ['regex:'.self::REGEX_GOOGLE_MEET])],
             'observaciones' => ['nullable', 'string', 'max:255'],
             'tipo_entrevista' => ['required', Rule::in(['tecnica', 'recursos_humanos'])],
-            'entrevistador_id' => ['nullable', 'integer', 'exists:reclutamiento.users,id'],
+            'entrevistador_id' => ['nullable', 'integer'],
         ], [
             'fecha_hora_programada.after' => 'La entrevista debe programarse para una fecha futura.',
             'ubicacion_o_enlace.regex' => 'Ingresa un enlace válido de Google Meet.',

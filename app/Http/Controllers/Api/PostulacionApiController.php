@@ -33,6 +33,7 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
         return $this->executeOperation(function () use ($request) {
             $consulta = Postulacion::query()
                 ->visiblesPara($request->user())
+                ->where('estado_id', '!=', PostulacionEstado::CONTRATADO)
                 ->with(['vacante', 'candidato', 'estado.bandeja', 'asignacion']);
 
             $postulaciones = QueryBuilder::for($consulta, $request)

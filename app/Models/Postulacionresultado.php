@@ -48,6 +48,10 @@ class Postulacionresultado extends Model
     use SoftDeletes;
     use HasFactory;
 
+    public const OFERTA_PENDIENTE = 'pendiente';
+    public const OFERTA_ACEPTADA = 'aceptada';
+    public const OFERTA_RECHAZADA = 'rechazada';
+
     protected $table = 'reclutamiento.postulacion_resultados';
 
 

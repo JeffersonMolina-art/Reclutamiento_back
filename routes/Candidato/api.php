@@ -19,6 +19,14 @@
         Route::get('postulaciones/{postulacion}/tracking', [PostulacionCandidatoApiController::class, 'tracking'])
             ->whereNumber('postulacion')
             ->name('postulaciones.tracking');
+        // OFERTA
+        Route::get('postulaciones/{postulacion}/oferta', [PostulacionCandidatoApiController::class, 'oferta'])
+            ->whereNumber('postulacion')
+            ->name('postulaciones.oferta');
+        Route::post('postulaciones/{postulacion}/oferta/responder', [PostulacionCandidatoApiController::class, 'responderOferta'])
+            ->whereNumber('postulacion')
+            ->middleware('throttle:10,1')
+            ->name('postulaciones.oferta.responder');
         // PERFIL CANDIDATO
         Route::get('perfil', [PerfilCandidatoApiController::class, 'show'])->name('perfil.show');
         Route::put('perfil', [PerfilCandidatoApiController::class, 'update'])->name('perfil.update');
