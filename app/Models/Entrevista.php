@@ -17,6 +17,7 @@
      * @property string $ubicacion_o_enlace
      * @property string|null $observaciones
      * @property string $tipo_entrevista
+     * @property string $resultado
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -47,6 +48,10 @@
         use SoftDeletes;
         use HasFactory;
 
+        public const RESULTADO_PENDIENTE = 'pendiente';
+        public const RESULTADO_APROBADO = 'aprobado';
+        public const RESULTADO_NO_APROBADO = 'no_aprobado';
+
         protected $table = 'reclutamiento.entrevistas';
 
 
@@ -59,7 +64,8 @@
                 'modalidad',
                 'ubicacion_o_enlace',
                 'observaciones',
-                'tipo_entrevista'
+                'tipo_entrevista',
+                'resultado',
             ];
 
 
@@ -79,6 +85,7 @@
                 'ubicacion_o_enlace' => 'string',
                 'observaciones' => 'string',
                 'tipo_entrevista' => 'string',
+                'resultado' => 'string',
                 'created_at' => 'datetime',
                 'updated_at' => 'datetime',
                 'deleted_at' => 'datetime',

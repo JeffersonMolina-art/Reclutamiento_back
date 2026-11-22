@@ -11,6 +11,7 @@
         Route::get('postulaciones/{postulacion}/contacto', [PostulacionApiController::class, 'contacto'])->name('postulaciones.contacto');
         Route::get('postulaciones/{postulacion}/cv', [PostulacionApiController::class, 'cv'])->name('postulaciones.cv');
         Route::post('postulaciones/{postulacion}/entrevistas', [EntrevistaApiController::class, 'store'])->name('postulaciones.entrevistas.store');
+        Route::post('entrevistas/{entrevista}/resultado', [EntrevistaApiController::class, 'resultado'])->name('entrevistas.resultado');
         Route::get('postulaciones/{postulacion}/archivos', [PostulacionApiController::class, 'listarArchivos'])->name('postulaciones.archivos.listar');
         Route::post('postulaciones/{postulacion}/archivos', [PostulacionApiController::class, 'subirArchivo'])->name('postulaciones.archivos.subir');
         Route::get('postulaciones/{postulacion}/archivos/{media}', [PostulacionApiController::class, 'descargarArchivo'])->name('postulaciones.archivos.descargar');

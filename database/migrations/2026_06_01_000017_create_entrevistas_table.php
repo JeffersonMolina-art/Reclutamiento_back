@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('ubicacion_o_enlace', 500);
             $table->string('observaciones', 255)->nullable();
             $table->enum('tipo_entrevista', ['tecnica', 'recursos_humanos']);
+            $table->enum('resultado', ['pendiente', 'aprobado', 'no_aprobado'])->default('pendiente');
             $table->timestamps();
             $table->softDeletes();
 

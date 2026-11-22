@@ -91,7 +91,7 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
                 ->toArray();
 
             $datos['entrevistas'] = $detalle->entrevistas()
-                ->with('estado')
+                ->with('estado', 'entrevistador')
                 ->orderByDesc('id')
                 ->get()
                 ->toArray();
@@ -161,7 +161,6 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
             );
         });
     }
-
 
     public function eliminarArchivo(Request $request, Postulacion $postulacion, int $media): JsonResponse
     {
