@@ -139,6 +139,7 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
         $validados = $request->validate([
             'estado_id' => ['required', 'integer'],
             'puesto_id' => ['required', 'integer'],
+            'unidad_id' => ['required', 'integer'],
             'sede_id' => ['required', 'integer'],
             'user_encargado' => ['nullable', 'integer'],
             'nombre' => ['required', 'string', 'max:45'],

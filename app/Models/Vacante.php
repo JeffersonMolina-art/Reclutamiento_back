@@ -31,6 +31,15 @@ class Vacante extends Model
         'salario_maximo' => 'Salario máximo',
     ];
 
+    protected array $bitacoraRelaciones = [
+        'estado_id' => ['estado', 'nombre'],
+        'puesto_id' => ['puesto', 'nombre'],
+        'sede_id' => ['sede', 'nombre'],
+        'unidad_id' => ['unidad', 'nombre'],
+        'user_id' => ['creador', 'nombre_completo'],
+        'user_encargado' => ['encargado', 'nombre_completo'],
+    ];
+
     protected $table = 'reclutamiento.vacantes';
 
     protected $fillable = [
@@ -117,6 +126,11 @@ class Vacante extends Model
     public function requisitos(): HasMany
     {
         return $this->hasMany(VacanteRequisito::class, 'vacante_id');
+    }
+
+    public function creador(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function encargado(): BelongsTo

@@ -165,6 +165,12 @@ trait HasBitacora
             return '[PROTEGIDO]';
         }
 
+        $relaciones = $this->obtenerRelacionesBitacora();
+
+        if (array_key_exists($campo, $relaciones)) {
+            return $this->resolverNombreRelacionBitacora($relaciones[$campo], $valor);
+        }
+
         $booleanos = $this->obtenerBooleanosBitacora();
 
         if (array_key_exists($campo, $booleanos)) {
@@ -242,6 +248,35 @@ trait HasBitacora
     {
         return property_exists($this, 'bitacoraEtiquetas')
             ? (array) $this->bitacoraEtiquetas
+            : [];
+    }
+
+    /**
+     * Reemplaza un id por el valor legible del registro relacionado.
+     *
+     * @param array{0: string, 1: string} $config [método de la relación, atributo a mostrar]
+     */
+    protected function resolverNombreRelacionBitacora(array $config, $id)
+    {
+        if ($id === null || $id === '') {
+            return null;
+        }
+
+        [$relacion, $atributo] = $config;
+
+        $modelo = $this->{$relacion}()->getRelated()->newQuery();
+
+        if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($modelo->getModel()), true)) {
+            $modelo->withTrashed();
+        }
+
+        return $modelo->find($id)?->{$atributo} ?? $id;
+    }
+
+    protected function obtenerRelacionesBitacora(): array
+    {
+        return property_exists($this, 'bitacoraRelaciones')
+            ? (array) $this->bitacoraRelaciones
             : [];
     }
 
