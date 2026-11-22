@@ -18,6 +18,13 @@ class PostulacionPermisosTableSeeder extends Seeder
             'ver postulaciones',
             'editar postulaciones',
             'asignar postulaciones',
+            'seccion postulaciones',
+            'recibida postulaciones',
+            'revision postulaciones',
+            'entrevista postulaciones',
+            'oferta postulaciones',
+            'crear postulaciones',
+            'historial postulaciones',
         ];
 
         foreach ($permisos as $permiso) {

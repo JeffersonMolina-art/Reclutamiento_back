@@ -15,13 +15,14 @@ class OpcionesFlujosTableSeeder extends Seeder
      */
     public function run(): void
     {
+        // VACANTES
         MenuOpcion::updateOrCreate(
             ['titulo_seccion' => 'Vacantes', 'ruta' => null],
             [
                 'titulo' => null,
                 'icono' => null,
-                'action' => 'sesion vacante',
-                'subject' => 'vacante',
+                'action' => 'seccion vacantes',
+                'subject' => 'Vacante',
                 'parent_id' => null,
                 'orden' => MenuOpcion::max('orden') + 1,
             ]);
@@ -37,13 +38,13 @@ class OpcionesFlujosTableSeeder extends Seeder
                 'parent_id' => null,
                 'orden' => MenuOpcion::max('orden') + 1,
             ]);
-
+// MIS POSTULACIONES
         MenuOpcion::updateOrCreate(
             ['titulo_seccion' => 'Postulaciones', 'ruta' => null],
             [
                 'titulo' => null,
                 'icono' => null,
-                'action' => 'listar postulaciones',
+                'action' => 'seccion postulaciones',
                 'subject' => 'Postulacion',
                 'parent_id' => null,
                 'orden' => MenuOpcion::max('orden') + 1,
@@ -54,9 +55,32 @@ class OpcionesFlujosTableSeeder extends Seeder
             [
                 'ruta' => 'postulaciones-asignadas',
                 'icono' => 'tabler-briefcase',
-                'action' => 'ver postulaciones',
+                'action' => 'listar postulaciones',
                 'subject' => 'Postulacion',
                 'titulo_seccion' => null,
+                'parent_id' => null,
+                'orden' => MenuOpcion::max('orden') + 1,
+            ]);
+
+        MenuOpcion::updateOrCreate(
+            ['titulo' => 'Historial de postulaciones'],
+            [
+                'ruta' => 'postulaciones-historial',
+                'icono' => 'tabler-history',
+                'action' => 'historial postulaciones',
+                'subject' => 'Postulacion',
+                'titulo_seccion' => null,
+                'parent_id' => null,
+                'orden' => MenuOpcion::max('orden') + 1,
+            ]);
+// CANDIDATOS
+        MenuOpcion::updateOrCreate(
+            ['titulo_seccion' => 'Candidatos', 'ruta' => null],
+            [
+                'titulo' => null,
+                'icono' => null,
+                'action' => 'seccion candidatos',
+                'subject' => 'Candidato',
                 'parent_id' => null,
                 'orden' => MenuOpcion::max('orden') + 1,
             ]);
@@ -66,7 +90,7 @@ class OpcionesFlujosTableSeeder extends Seeder
             [
                 'ruta' => 'candidatos',
                 'icono' => 'tabler-users',
-                'action' => 'ver candidatos',
+                'action' => 'historial candidatos postulaciones',
                 'subject' => 'Candidato',
                 'titulo_seccion' => null,
                 'parent_id' => null,

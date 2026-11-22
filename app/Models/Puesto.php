@@ -39,6 +39,8 @@
 
         public const RECLUTADOR = 5;
         public const ANALISTA = 1;
+        public const JEFE_RRHH = 3;
+        public const SUBJEFE_RRHH = 4;
 
         protected $table = 'reclutamiento.puestos';
 

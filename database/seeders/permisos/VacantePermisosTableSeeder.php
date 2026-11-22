@@ -15,6 +15,7 @@ class VacantePermisosTableSeeder extends Seeder
     {
         $permisos = [
             'listar vacantes',
+            'seccion vacantes',
             'ver vacantes',
             'crear vacantes',
             'editar vacantes',

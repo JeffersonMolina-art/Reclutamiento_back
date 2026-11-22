@@ -17,6 +17,8 @@ class CandidatoPermisosTableSeeder extends Seeder
             'ver candidatos',
             'crear candidatos',
             'historial candidatos',
+            'seccion candidatos',
+            'historial candidatos postulaciones',
         ];
 
         foreach ($permisos as $permiso) {
