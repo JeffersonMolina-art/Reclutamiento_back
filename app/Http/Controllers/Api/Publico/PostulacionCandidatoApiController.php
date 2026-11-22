@@ -190,9 +190,9 @@ class PostulacionCandidatoApiController extends AppBaseController
 
             if ($aceptada) {
                 // DESCONTAR PLAZA DE LA VACANTE
-                $plazasActualizadas = $postulacion->vacante()
-                    ->where('cantidad_plazas', '>', 0)
-                    ->decrement('cantidad_plazas');
+                $vacante = $postulacion->vacante()->lockForUpdate()->first();
+                $vacante->cantidad_plazas = max(0, $vacante->cantidad_plazas - 1);
+                $plazasActualizadas = $vacante->save();
 
                 if ($plazasActualizadas === 0) {
                     throw ValidationException::withMessages([
