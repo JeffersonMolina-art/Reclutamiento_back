@@ -27,6 +27,7 @@ class PostulacionCandidatoApiController extends AppBaseController
             $candidato = $this->candidato($request);
 
             $postulaciones = Postulacion::query()
+                ->where('estado_id', '!=', PostulacionEstado::CONTRATADO)
                 ->where('candidato_id', $candidato->id)
                 ->with(['vacante:id,nombre,puesto_id,sede_id,modalidad_trabajo', 'vacante.puesto:id,nombre', 'vacante.sede:id,nombre', 'estado:id,nombre,codigo'])
                 ->orderByDesc('fecha_postulacion')
@@ -55,6 +56,7 @@ class PostulacionCandidatoApiController extends AppBaseController
             $candidato = $this->candidato($request);
 
             $registro = Postulacion::query()
+                ->where('estado_id', '!=', PostulacionEstado::CONTRATADO)
                 ->where('id', $postulacion)
                 ->where('candidato_id', $candidato->id)
                 ->with(['vacante:id,nombre', 'estado:id,nombre,codigo'])

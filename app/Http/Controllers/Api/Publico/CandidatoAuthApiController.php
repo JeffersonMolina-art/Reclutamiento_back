@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Hash;
 
 class CandidatoAuthApiController extends AppBaseController
 {
-    private const MENSAJE_CREDENCIALES = 'Correo o contraseña incorrectos.';
 
     /**
      * POST /api/publico/candidatos/login
@@ -38,7 +37,7 @@ class CandidatoAuthApiController extends AppBaseController
             if (! $usuario || ! $valida) {
                 $limitador->recordFailedAttempt($clave);
 
-                return response()->json(['message' => self::MENSAJE_CREDENCIALES], 401);
+                return response()->json(['message' => 'Correo o contraseña incorrectos.'], 401);
             }
 
             if ((int) $usuario->estado_id !== UserExterno::ESTADO_ACTIVO) {
