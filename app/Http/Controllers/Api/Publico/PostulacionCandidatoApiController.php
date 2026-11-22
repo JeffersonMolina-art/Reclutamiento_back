@@ -6,6 +6,7 @@ use App\Http\Controllers\AppBaseController;
 use App\Models\Candidato;
 use App\Models\Postulacion;
 use App\Models\PostulacionEstado;
+use App\Models\Postulacionresultado;
 use App\Models\SeguimientoPostulacion;
 use App\Models\UserExterno;
 use App\Models\Vacante;
@@ -13,6 +14,7 @@ use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class PostulacionCandidatoApiController extends AppBaseController
 {
@@ -148,6 +150,71 @@ class PostulacionCandidatoApiController extends AppBaseController
                 'id' => $postulacion->id,
             ], 201);
         });
+    }
+    public function oferta(Request $request, int $postulacion): JsonResponse
+    {
+        return $this->executeOperation(function () use ($request, $postulacion) {
+            $oferta = $this->postulacionDelCandidato($request, $postulacion)->resultado;
+
+            return response()->json(['data' => $oferta ? $this->datosOferta($oferta) : null]);
+        });
+    }
+    public function responderOferta(Request $request, int $postulacion): JsonResponse
+    {
+        $datos = $request->validate([
+            'respuesta' => ['required', Rule::in([Postulacionresultado::OFERTA_ACEPTADA, Postulacionresultado::OFERTA_RECHAZADA])],
+            'motivo_rechazo_oferta' => ['nullable', 'required_if:respuesta,'.Postulacionresultado::OFERTA_RECHAZADA, 'string', 'max:255'],
+        ]);
+
+        return $this->executeTransaction(function () use ($request, $postulacion, $datos) {
+            $postulacion = $this->postulacionDelCandidato($request, $postulacion);
+
+            $oferta = $postulacion->resultado()->lockForUpdate()->first();
+
+            if (! $oferta
+                || $oferta->estado_oferta !== Postulacionresultado::OFERTA_PENDIENTE
+                || $postulacion->estado_id !== PostulacionEstado::OFERTA) {
+                return response()->json(['message' => 'No hay una oferta pendiente de respuesta.'], 422);
+            }
+
+            $aceptada = $datos['respuesta'] === Postulacionresultado::OFERTA_ACEPTADA;
+
+            $oferta->update([
+                'estado_oferta' => $datos['respuesta'],
+                'fecha_respuesta_oferta' => now(),
+                'motivo_rechazo_oferta' => $aceptada ? null : $datos['motivo_rechazo_oferta'],
+            ]);
+
+            if ($aceptada) {
+                $postulacion->moverA(
+                    PostulacionEstado::findOrFail(PostulacionEstado::CONTRATADO),
+                    'El candidato aceptó la oferta.'
+                );
+            }
+
+            return response()->json([
+                'message' => $aceptada ? 'Aceptaste la oferta.' : 'Rechazaste la oferta.',
+                'data' => $this->datosOferta($oferta),
+            ]);
+        });
+    }
+    private function postulacionDelCandidato(Request $request, int $postulacion): Postulacion
+    {
+        return Postulacion::query()
+            ->where('candidato_id', $this->candidato($request)->id)
+            ->findOrFail($postulacion);
+    }
+
+    private function datosOferta(Postulacionresultado $oferta): array
+    {
+        return [
+            'salario_ofrecido' => $oferta->salario_ofrecido,
+            'fecha_inicio_propuesta' => $oferta->fecha_inicio_propuesta?->toDateString(),
+            'condiciones_oferta' => $oferta->condiciones_oferta,
+            'estado_oferta' => $oferta->estado_oferta,
+            'fecha_respuesta_oferta' => $oferta->fecha_respuesta_oferta?->toIso8601String(),
+            'motivo_rechazo_oferta' => $oferta->motivo_rechazo_oferta,
+        ];
     }
 
     private function candidato(Request $request): Candidato

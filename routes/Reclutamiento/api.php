@@ -1,5 +1,6 @@
 <?php
 
+    use App\Http\Controllers\Api\CandidatoApiController;
     use App\Http\Controllers\Api\EntrevistaApiController;
     use App\Http\Controllers\Api\OfertaApiController;
     use App\Http\Controllers\Api\PostulacionApiController;
@@ -7,6 +8,7 @@
     use Illuminate\Support\Facades\Route;
 
     Route::prefix('reclutamiento')->name('reclutamiento.')->group(function () {
+        Route::post('candidatos', [CandidatoApiController::class, 'store'])->name('candidatos.store');
         Route::post('postulaciones/{postulacion}/asignar', [PostulacionApiController::class, 'asignar'])->name('postulaciones.asignar');
         Route::post('postulaciones/{postulacion}/comentarios', [PostulacionApiController::class, 'comentar'])->name('postulaciones.comentar');
         Route::get('postulaciones/{postulacion}/contacto', [PostulacionApiController::class, 'contacto'])->name('postulaciones.contacto');
@@ -20,6 +22,6 @@
         Route::get('postulaciones/{postulacion}/archivos/{media}', [PostulacionApiController::class, 'descargarArchivo'])->name('postulaciones.archivos.descargar');
         Route::delete('postulaciones/{postulacion}/archivos/{media}', [PostulacionApiController::class, 'eliminarArchivo'])->name('postulaciones.archivos.eliminar');
         Route::apiResource('vacantes', VacanteApiController::class)->parameters(['vacantes' => 'vacante']);
-        Route::apiResource('postulaciones', PostulacionApiController::class)->only(['index', 'show', 'update'])
+        Route::apiResource('postulaciones', PostulacionApiController::class)->only(['index', 'store', 'show', 'update'])
             ->parameters(['postulaciones' => 'postulacion']);
     });

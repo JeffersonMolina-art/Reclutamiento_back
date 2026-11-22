@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\AppBaseController;
 use App\Http\Resources\PostulacionDetalleResource;
+use App\Models\Candidato;
 use App\Models\Postulacion;
+use App\Models\Vacante;
+use Illuminate\Support\Str;
 use App\Models\PostulacionEstado;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,7 +23,7 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
     {
         return [
             new Middleware('abilities:ver postulaciones', only: ['index', 'show', 'cv', 'contacto', 'listarArchivos', 'descargarArchivo']),
-            new Middleware('abilities:editar postulaciones', only: ['update', 'comentar', 'subirArchivo', 'eliminarArchivo']),
+            new Middleware('abilities:editar postulaciones', only: ['store', 'update', 'comentar', 'subirArchivo', 'eliminarArchivo']),
             new Middleware('abilities:asignar postulaciones', only: ['asignar']),
         ];
     }
@@ -60,6 +63,56 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
                 $postulaciones->toArray(),
                 'Postulaciones recuperadas con éxito.'
             );
+        });
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        $datos = $request->validate([
+            'vacante_id' => ['required', 'integer', 'min:1'],
+            'candidato_id' => ['required', 'integer', 'min:1'],
+            'fuente_reclutamiento' => ['nullable', Rule::in(['linkedin', 'referido', 'portal_empleo', 'otro'])],
+        ]);
+
+        return $this->executeTransaction(function () use ($datos) {
+            $vacante = Vacante::query()->publicas()->find($datos['vacante_id']);
+
+            if (! $vacante) {
+                return response()->json(['message' => 'La vacante no está disponible.'], 422);
+            }
+
+            if (! Candidato::whereKey($datos['candidato_id'])->exists()) {
+                return response()->json(['message' => 'El candidato no existe.'], 422);
+            }
+
+            $yaPostulado = Postulacion::where('vacante_id', $vacante->id)
+                ->where('candidato_id', $datos['candidato_id'])
+                ->exists();
+
+            if ($yaPostulado) {
+                return response()->json(['message' => 'El candidato ya está postulado a esta vacante.'], 409);
+            }
+
+            $postulacion = Postulacion::create([
+                'vacante_id' => $vacante->id,
+                'candidato_id' => $datos['candidato_id'],
+                'estado_id' => Postulacion::ESTADO_INICIAL,
+                'fecha_postulacion' => now()->toDateString(),
+                'fuente_reclutamiento' => $datos['fuente_reclutamiento'] ?? 'otro',
+            ]);
+
+            if ($vacante->user_encargado) {
+                $postulacion->asignacion()->create([
+                    'users_id' => $vacante->user_encargado,
+                    'bandeja_id' => $postulacion->estado()->value('bandeja_id'),
+                    'estado_id' => $postulacion->estado_id,
+                    'nombre' => Str::limit($vacante->encargado?->nombre_completo ?? '', 45, ''),
+                ]);
+            }
+
+            $postulacion->registrarSeguimiento(Postulacion::ESTADO_INICIAL, null, 'Postulación creada desde el sistema', null, 0);
+
+            return $this->sendResponse(['id' => $postulacion->id], 'Postulación creada con éxito.');
         });
     }
 
