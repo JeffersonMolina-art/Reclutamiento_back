@@ -69,7 +69,7 @@ class UserExternoEstado extends Model
     public static $rules =
     [
     'nombre' => 'required|string|max:90',
-    'codigo' => 'required|string|max:60|unique:reclutamiento.usuario_externo_estados,codigo',
+    'codigo' => 'required|string|max:60|unique:sqlsrv.reclutamiento.usuario_externo_estados,codigo',
 ];
 
 
@@ -88,6 +88,6 @@ class UserExternoEstado extends Model
      *
      * @var array
      */
-    
+
 
 }

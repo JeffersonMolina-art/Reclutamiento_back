@@ -49,7 +49,7 @@
                 'nombre',
                 'codigo'
             ];
-        
+
 
         /**
          * The attributes that should be casted to native types.
@@ -72,11 +72,10 @@
          *
          * @var array
          */
-        public static $rules =
-            [
-                'nombre' => 'required|string|max:255',
-                'codigo' => 'required|string|max:60|unique:reclutamiento.entrevistas_estado,codigo',
-            ];
+        public static $rules = [
+            'nombre' => 'required|string|max:255',
+            'codigo' => 'required|string|max:60|unique:sqlsrv.reclutamiento.entrevistas_estado,codigo',
+        ];
 
 
         /**

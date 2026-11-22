@@ -81,9 +81,10 @@
             [
                 'nombre' => 'required|string|max:90',
                 'bandeja_id' => 'required|integer',
-                'codigo' => 'required|string|max:60|unique:reclutamiento.postulacion_estado,codigo',
+                'codigo' => 'required|string|max:60|unique:sqlsrv.reclutamiento.postulacion_estado,codigo',
             ];
 
+        public $appends = ['nombre_bandeja'];
 
         /**
          * Custom messages for validation
@@ -103,6 +104,11 @@
         public function bandeja()
         {
             return $this->belongsTo(Bandeja::class, 'bandeja_id', 'id');
+        }
+
+        public function getNombreBandejaAttribute()
+        {
+            return $this->bandeja ? $this->bandeja->nombre : null;
         }
 
     }

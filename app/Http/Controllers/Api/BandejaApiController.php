@@ -79,7 +79,6 @@ class BandejaApiController extends AppBaseController implements HasMiddleware
     public function show(Bandeja $bandeja)
     {
         return $this->executeOperation(function () use ($bandeja) {
-            $bandeja->conAtributoAdicional($request->appends ?? []);
             return $this->sendResponse($bandeja->toArray(), 'Bandeja recuperado con éxito.');
         });
     }

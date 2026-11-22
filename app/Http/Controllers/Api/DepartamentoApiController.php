@@ -81,7 +81,6 @@ class DepartamentoApiController extends AppBaseController implements HasMiddlewa
     public function show(Departamento $departamento)
     {
         return $this->executeOperation(function () use ($departamento) {
-            $departamento->conAtributoAdicional($request->appends ?? []);
             return $this->sendResponse($departamento->toArray(), 'Departamento recuperado con éxito.');
         });
     }

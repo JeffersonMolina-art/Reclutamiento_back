@@ -111,10 +111,10 @@ class UnidadApiController extends AppBaseController implements HasMiddleware
      * Display the specified Unidad.
      * GET|HEAD /unidads/{id}
      */
-    public function show(Unidad $unidad)
+    public function show(Unidad $unidade)
     {
-        return $this->executeOperation(function () use ($unidad) {
-            return $this->sendResponse($unidad->toArray(), 'Unidad recuperado con éxito.');
+        return $this->executeOperation(function () use ($unidade) {
+            return $this->sendResponse($unidade->toArray(), 'Unidad recuperado con éxito.');
         });
     }
 

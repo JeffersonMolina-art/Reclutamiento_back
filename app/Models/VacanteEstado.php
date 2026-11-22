@@ -69,7 +69,7 @@
         public static $rules =
             [
                 'nombre' => 'required|string|max:90',
-                'codigo' => 'required|string|max:60|unique:reclutamiento.vacantes_estados,codigo',
+                'codigo' => 'required|string|max:60|unique:sqlsrv.reclutamiento.vacantes_estados,codigo',
             ];
 
 

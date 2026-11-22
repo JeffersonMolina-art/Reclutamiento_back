@@ -77,7 +77,6 @@ class EntrevistaEstadoApiController extends AppBaseController implements HasMidd
     public function show(EntrevistaEstado $entrevistaestado)
     {
         return $this->executeOperation(function () use ($entrevistaestado) {
-            $entrevistaestado->conAtributoAdicional($request->appends ?? []);
             return $this->sendResponse($entrevistaestado->toArray(), 'EntrevistaEstado recuperado con éxito.');
         });
     }

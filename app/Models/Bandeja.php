@@ -73,7 +73,7 @@ class Bandeja extends Model
     public static $rules =
     [
     'nombre' => 'required|string|max:90',
-    'codigo' => 'required|string|max:60|unique:reclutamiento.bandeja,codigo',
+    'codigo' => 'required|string|max:60|unique:sqlsrv.reclutamiento.bandeja,codigo',
 ];
 
 
@@ -92,6 +92,6 @@ class Bandeja extends Model
      *
      * @var array
      */
-    
+
 
 }

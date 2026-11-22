@@ -98,6 +98,7 @@ class Municipio extends Model
 
     ];
 
+    public $appends = ['nombre_departamento'];
 
     /**
      * Accessor for relationships
@@ -107,6 +108,11 @@ class Municipio extends Model
     public function departamento()
     {
     return $this->belongsTo(Departamento::class,'departamento_id','id');
+    }
+
+    public function getNombreDepartamentoAttribute()
+    {
+        return $this->departamento ? $this->departamento->nombre : null;
     }
 
 }

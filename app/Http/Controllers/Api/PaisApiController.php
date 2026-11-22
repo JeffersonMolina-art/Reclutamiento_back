@@ -81,7 +81,6 @@ class PaisApiController extends AppBaseController implements HasMiddleware
     public function show(Pais $pais)
     {
         return $this->executeOperation(function () use ($pais) {
-            $pais->conAtributoAdicional($request->appends ?? []);
             return $this->sendResponse($pais->toArray(), 'Pais recuperado con éxito.');
         });
     }

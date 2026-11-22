@@ -75,8 +75,8 @@
          */
         public static $rules =
             [
-                'bandeja_id' => 'required|integer|unique:reclutamiento.postulacion_asignaciones,bandeja_id',
-                'postulacion_id' => 'required|integer|unique:reclutamiento.postulacion_asignaciones,postulacion_id',
+                'bandeja_id' => 'required|integer|unique:sqlsrv.reclutamiento.postulacion_asignaciones,bandeja_id',
+                'postulacion_id' => 'required|integer|unique:sqlsrv.reclutamiento.postulacion_asignaciones,postulacion_id',
                 'users_id' => 'required|integer',
                 'nombre' => 'required|string|max:90',
             ];

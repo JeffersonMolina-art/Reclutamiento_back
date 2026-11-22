@@ -77,7 +77,6 @@ class VacanteEstadoApiController extends AppBaseController implements HasMiddlew
     public function show(VacanteEstado $vacanteestado)
     {
         return $this->executeOperation(function () use ($vacanteestado) {
-            $vacanteestado->conAtributoAdicional($request->appends ?? []);
             return $this->sendResponse($vacanteestado->toArray(), 'VacanteEstado recuperado con éxito.');
         });
     }

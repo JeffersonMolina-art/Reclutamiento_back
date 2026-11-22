@@ -79,7 +79,6 @@ class PostulacionEstadoApiController extends AppBaseController implements HasMid
     public function show(PostulacionEstado $postulacionestado)
     {
         return $this->executeOperation(function () use ($postulacionestado) {
-            $postulacionestado->conAtributoAdicional($request->appends ?? []);
             return $this->sendResponse($postulacionestado->toArray(), 'PostulacionEstado recuperado con éxito.');
         });
     }

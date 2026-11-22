@@ -79,7 +79,6 @@ class GerenciaApiController extends AppBaseController implements HasMiddleware
     public function show(Gerencia $gerencia)
     {
         return $this->executeOperation(function () use ($gerencia) {
-            $gerencia->conAtributoAdicional($request->appends ?? []);
             return $this->sendResponse($gerencia->toArray(), 'Gerencia recuperado con éxito.');
         });
     }

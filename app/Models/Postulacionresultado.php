@@ -106,7 +106,7 @@ class Postulacionresultado extends Model
     [
     'motivo' => 'nullable|string|max:255',
     'fecha_decision' => 'nullable|date',
-    'postulacion_id' => 'required|integer|unique:reclutamiento.postulacion_resultados,postulacion_id',
+    'postulacion_id' => 'required|integer|unique:sqlsrv.reclutamiento.postulacion_resultados,postulacion_id',
     'estado_id' => 'required|integer',
     'user_id' => 'required|integer',
     'salario_ofrecido' => 'nullable|numeric|min:0',

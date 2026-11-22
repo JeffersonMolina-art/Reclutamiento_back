@@ -86,7 +86,7 @@
          */
         public static $rules =
             [
-                'email' => 'required|string|max:510|unique:reclutamiento.user_externos,email',
+                'email' => 'required|string|max:510|unique:sqlsrv.reclutamiento.user_externos,email',
                 'telefono' => 'nullable|string|max:90',
                 'password' => 'required|string|max:510',
                 'estado_id' => 'required|integer',

@@ -71,7 +71,6 @@ class SedeApiController extends AppBaseController implements HasMiddleware
     public function show(Sede $sede)
     {
         return $this->executeOperation(function () use ($sede) {
-            $sede->conAtributoAdicional($request->appends ?? []);
             return $this->sendResponse($sede->toArray(), 'Sede recuperado con éxito.');
         });
     }

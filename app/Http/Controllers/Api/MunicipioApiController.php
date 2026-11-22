@@ -83,7 +83,6 @@ class MunicipioApiController extends AppBaseController implements HasMiddleware
     public function show(Municipio $municipio)
     {
         return $this->executeOperation(function () use ($municipio) {
-            $municipio->conAtributoAdicional($request->appends ?? []);
             return $this->sendResponse($municipio->toArray(), 'Municipio recuperado con éxito.');
         });
     }

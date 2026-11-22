@@ -72,7 +72,6 @@ class UserExternoEstadoApiController extends AppBaseController implements HasMid
     public function show(UserExternoEstado $userexternoestado)
     {
         return $this->executeOperation(function () use ($userexternoestado) {
-            $userexternoestado->conAtributoAdicional($request->appends ?? []);
             return $this->sendResponse($userexternoestado->toArray(), 'UserExternoEstado recuperado con éxito.');
         });
     }
