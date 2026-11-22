@@ -11,12 +11,12 @@ class UsuariosReclutamientoSeeder extends Seeder
     public function run(): void
     {
         $usuarios = [
-            ['gyreclutador1', 'Reclutador', 'Uno', 'Reclutador de Personal'],
-            ['gyreclutador2', 'Reclutador', 'Dos', 'Reclutador de Personal'],
-            ['gyreclutador3', 'Reclutador', 'Tres', 'Reclutador de Personal'],
-            ['gyjeferrhh', 'Jefe', 'Recursos Humanos', 'Jefe de Recursos Humanos'],
-            ['gysubjeferrhh', 'Subjefe', 'Recursos Humanos', 'Subjefe de Recursos Humanos'],
-            ['gyanalistareclutamiento', 'Analista', 'Reclutamiento', 'Analista de Reclutamiento'],
+            ['gymadruano', 'Madelyn Jazmine', 'Ruano Hernandez', 'Reclutador de Personal'],
+            ['gyfermoran', 'Fernando Jose', 'Moran Morales', 'Reclutador de Personal'],
+            ['gyemidardon', 'Emily Jasmine', 'Dardon Cabrera', 'Reclutador de Personal'],
+            ['gyvivjacinto', 'Vivian Maribel', 'Jacinto Calderon', 'Jefe de Recursos Humanos'],
+            ['gycrigarcia', 'Cristian Jose', 'Garcia Rosales', 'Subjefe de Recursos Humanos'],
+            ['gysaumonterroso', 'Saul Rodrigo', 'Monterroso Belteton', 'Analista de Reclutamiento'],
         ];
 
         foreach ($usuarios as [$usuarioDominio, $nombre, $apellido, $puesto]) {

@@ -8,7 +8,7 @@
 
     Route::prefix('portal')->name('portal.')->middleware(['auth:sanctum', 'candidato'])->group(function () {
         // APIS DE AUTETICACION CANDIDATOS
-        Route::get('me', [CandidatoAuthApiController::class, 'me'])->name('me');
+        Route::get('informacioncandidato', [CandidatoAuthApiController::class, 'informacioncandidato'])->name('me');
         Route::post('logout', [CandidatoAuthApiController::class, 'logout'])->name('logout');
         // POSTULACIONES CANDIDATO
         Route::get('postulaciones', [PostulacionCandidatoApiController::class, 'index'])->name('postulaciones.index');

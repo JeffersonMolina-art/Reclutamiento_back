@@ -110,6 +110,28 @@ class PostulacionCandidatoApiController extends AppBaseController
                 ], 422);
             }
 
+            $faltantes = [];
+
+            if ((float) $candidato->expectativa_salarial <= 0)
+                $faltantes[] = 'expectativa salarial';
+
+            if (! $candidato->conocimientos()->exists())
+                $faltantes[] = 'al menos un conocimiento';
+
+            if (! $candidato->experiencias()->exists())
+                $faltantes[] = 'al menos una experiencia';
+
+            if (! $candidato->formaciones()->exists())
+                $faltantes[] = 'al menos una formación';
+
+            if ($faltantes !== []) {
+                return response()->json([
+                    'message' => 'Completa tu perfil antes de postularte. Te falta: '.implode(', ', $faltantes).'.',
+                    'requiere_perfil' => true,
+                    'faltantes' => $faltantes,
+                ], 422);
+            }
+
             $vacante = Vacante::query()->publicas()->find($datos['vacante_id']);
 
             if (! $vacante) {

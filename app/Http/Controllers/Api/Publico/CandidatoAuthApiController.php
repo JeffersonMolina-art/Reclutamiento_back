@@ -58,10 +58,7 @@ class CandidatoAuthApiController extends AppBaseController
         });
     }
 
-    /**
-     * GET /api/portal/me
-     */
-    public function me(Request $request): JsonResponse
+    public function informacioncandidato(Request $request): JsonResponse
     {
         return $this->executeOperation(fn () => response()->json($this->perfil($request->user())));
     }
