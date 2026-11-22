@@ -23,7 +23,9 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
     {
         return [
             new Middleware('abilities:ver postulaciones', only: ['index', 'show', 'cv', 'contacto', 'listarArchivos', 'descargarArchivo']),
-            new Middleware('abilities:editar postulaciones', only: ['store', 'update', 'comentar', 'subirArchivo', 'eliminarArchivo']),
+            new Middleware('abilities:crear postulaciones', only: ['store']),
+            new Middleware('abilities:historial postulaciones', only: ['historial']),
+            new Middleware('abilities:editar postulaciones', only: ['update', 'comentar', 'subirArchivo', 'eliminarArchivo']),
             new Middleware('abilities:asignar postulaciones', only: ['asignar']),
         ];
     }
@@ -63,6 +65,61 @@ class PostulacionApiController extends AppBaseController implements HasMiddlewar
                 $postulaciones->toArray(),
                 'Postulaciones recuperadas con éxito.'
             );
+        });
+    }
+
+    public function historial(Request $request): JsonResponse
+    {
+        return $this->executeOperation(function () use ($request) {
+            $consulta = Postulacion::query()->with([
+                'candidato:id,primer_nombre,segundo_nombre,tercer_nombre,primer_apellido,segundo_apellido,correo_contacto',
+                'vacante:id,nombre',
+                'estado:id,nombre,codigo',
+                'seguimientos' => fn ($q) => $q->orderBy('fecha_cambio')->orderBy('id'),
+                'seguimientos.estadoActual:id,nombre,codigo',
+                'seguimientos.user',
+            ]);
+
+            $postulaciones = QueryBuilder::for($consulta, $request)
+                ->allowedFilters(
+                    AllowedFilter::exact('vacante_id'),
+                    AllowedFilter::exact('candidato_id'),
+                    AllowedFilter::exact('estado_id'),
+                    AllowedFilter::callback('buscar', fn ($q, $valor) => $q->whereHas(
+                        'candidato',
+                        fn ($c) => $c->where('dpi', 'like', "%{$valor}%")
+                            ->orWhere('primer_nombre', 'like', "%{$valor}%")
+                            ->orWhere('primer_apellido', 'like', "%{$valor}%")
+                            ->orWhere('correo_contacto', 'like', "%{$valor}%")
+                    )),
+                    AllowedFilter::callback('fecha_desde', fn ($q, $valor) => $q->whereDate('fecha_postulacion', '>=', $valor)),
+                    AllowedFilter::callback('fecha_hasta', fn ($q, $valor) => $q->whereDate('fecha_postulacion', '<=', $valor)),
+                )
+                ->allowedSorts('id', 'fecha_postulacion', 'estado_id')
+                ->defaultSort('-id')
+                ->jsonPaginate($request->input('page.size') ?? 10)
+                ->through(fn (Postulacion $p) => [
+                    'id' => $p->id,
+                    'candidato_id' => $p->candidato_id,
+                    'candidato' => $p->candidato?->nombre_completo,
+                    'correo' => $p->candidato?->correo_contacto,
+                    'vacante_id' => $p->vacante_id,
+                    'vacante' => $p->vacante?->nombre,
+                    'estado' => $p->estado?->nombre,
+                    'estado_codigo' => $p->estado?->codigo,
+                    'fecha_postulacion' => $p->fecha_postulacion?->toDateString(),
+                    'porcentaje' => $p->seguimientos->last()?->porcentaje ?? 0,
+                    'seguimiento' => $p->seguimientos->map(fn ($s) => [
+                        'estado' => $s->estadoActual?->nombre,
+                        'estado_codigo' => $s->estadoActual?->codigo,
+                        'porcentaje' => $s->porcentaje,
+                        'comentario' => $s->comentario,
+                        'usuario' => $s->user?->nombre_completo,
+                        'fecha' => $s->fecha_cambio?->toIso8601String(),
+                    ])->values(),
+                ]);
+
+            return $this->sendResponse($postulaciones->toArray(), 'Historial de postulaciones recuperado con éxito.');
         });
     }
 

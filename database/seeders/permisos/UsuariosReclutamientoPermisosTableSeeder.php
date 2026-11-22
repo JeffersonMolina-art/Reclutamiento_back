@@ -22,7 +22,6 @@ class UsuariosReclutamientoPermisosTableSeeder extends Seeder
         $permisosBase = [
             'ver postulaciones',
             'ver postulacion estados',
-            'listar postulaciones',
             'seccion postulaciones',
             'editar postulaciones',
             'asignar postulaciones',
@@ -59,6 +58,7 @@ class UsuariosReclutamientoPermisosTableSeeder extends Seeder
             'seccion vacantes',
             'listar vacantes',
             'ver vacantes',
+            'crear vacantes',
             'ver sedes',
             'ver unidades',
             'editar vacantes',

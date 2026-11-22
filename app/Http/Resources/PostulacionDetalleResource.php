@@ -31,6 +31,7 @@
 
                 'candidato' => [
                     'id' => $candidato?->id,
+                    'nombre_completo' => $candidato?->nombre_completo,
                     'primer_nombre' => $candidato?->primer_nombre,
                     'segundo_nombre' => $candidato?->segundo_nombre,
                     'tercer_nombre' => $candidato?->tercer_nombre,

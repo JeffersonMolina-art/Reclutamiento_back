@@ -33,7 +33,23 @@ class Candidato extends Model implements HasMedia
         'expectativa_salarial',
     ];
 
-    protected $casts = ['fecha_nacimiento' => 'date'];
+    protected $casts = [
+        'user_id' => 'integer',
+        'dpi' => 'string',
+        'primer_nombre' => 'string',
+        'segundo_nombre' => 'string',
+        'tercer_nombre' => 'string',
+        'primer_apellido' => 'string',
+        'segundo_apellido' => 'string',
+        'correo_contacto' => 'string',
+        'telefono_contacto' => 'string',
+        'fecha_nacimiento' => 'date',
+        'expectativa_salarial' => 'decimal:2',
+    ];
+
+    protected $appends = [
+        'nombre_completo',
+    ];
 
     public function registerMediaCollections(): void
     {

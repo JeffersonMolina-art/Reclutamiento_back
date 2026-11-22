@@ -68,6 +68,7 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
         $validados = $request->validate([
             'puesto_id' => ['required', 'integer'],
             'sede_id' => ['required', 'integer'],
+            'unidad_id' => ['required', 'integer'],
             'user_encargado' => ['nullable', 'integer'],
             'nombre' => ['required', 'string', 'max:45'],
             'descripcion' => ['required', 'string', 'max:255'],
@@ -87,7 +88,7 @@ class VacanteApiController extends AppBaseController implements HasMiddleware
 
         return $this->executeTransaction(function () use ($request, $validados) {
             $validados['user_id'] = $request->user()->id;
-            $validados['estado_id'] = VacanteEstado::BORRADOR;
+            $validados['estado_id'] = $request->estado_id;
 
             $vacante = Vacante::create($validados);
 
